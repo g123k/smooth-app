@@ -98,7 +98,7 @@
     "@sign_out": {
         "description": "Button label: For sign out"
     },
-    "sign_out_confirmation": "Είστε βέβαιοι ότι θέλετε να αποσυνδεθείτε",
+    "sign_out_confirmation": "Είστε βέβαιοι ότι θέλετε να αποσυνδεθείτε;",
     "@sign_out_confirmation": {
         "description": "Pop up title: Reassuring if the user really want to sign out"
     },
@@ -578,7 +578,7 @@
         "description": "Button to switch to 'compare products mode'"
     },
     "retry_button_label": "Προσπαθήστε ξανά",
-    "main_app_color": "Main color of the app",
+    "main_app_color": "Το κύριο χρώμα της εφαρμογής",
     "@main_app_color": {
         "description": "Heading for the section to pick the main app color"
     }

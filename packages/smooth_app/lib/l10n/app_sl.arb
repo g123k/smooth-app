@@ -4,7 +4,7 @@
     "@yes": {},
     "add": "Dodaj",
     "@add": {},
-    "okay": "Okay",
+    "okay": "V redu",
     "@okay": {},
     "applyButtonText": "Uporabi",
     "@applyButtonText": {},
@@ -20,11 +20,11 @@
     "@close": {},
     "no": "Ne",
     "@no": {},
-    "stop": "Stop",
+    "stop": "Ustavi",
     "@stop": {},
     "finish": "Finish",
     "@finish": {},
-    "reset_food_prefs": "Reset food preferences",
+    "reset_food_prefs": "Ponastavite nastavitve hrane",
     "@reset": {
         "description": "Button label, clicking on the button will reset user's food preferences."
     },

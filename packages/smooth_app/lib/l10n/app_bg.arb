@@ -406,7 +406,7 @@
     "@retake_photo_button_label": {
         "description": "Button clicking on which allows users to retake the last photo they took."
     },
-    "selecting_photo": "Selecting photo",
+    "selecting_photo": "Избор на снимката",
     "@selecting_photo": {
         "description": "Progress indicator when the users takes a photo"
     },
@@ -578,7 +578,7 @@
         "description": "Button to switch to 'compare products mode'"
     },
     "retry_button_label": "Повторен опит",
-    "main_app_color": "Main color of the app",
+    "main_app_color": "Основен цвят на приложението",
     "@main_app_color": {
         "description": "Heading for the section to pick the main app color"
     }

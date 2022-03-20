@@ -4,7 +4,7 @@
     "@yes": {},
     "add": "Dodajte",
     "@add": {},
-    "okay": "Okay",
+    "okay": "U redu",
     "@okay": {},
     "applyButtonText": "Primeni",
     "@applyButtonText": {},
@@ -20,29 +20,29 @@
     "@close": {},
     "no": "Ne",
     "@no": {},
-    "stop": "Stop",
+    "stop": "Stani",
     "@stop": {},
     "finish": "Finish",
     "@finish": {},
-    "reset_food_prefs": "Reset food preferences",
+    "reset_food_prefs": "Resetujte preferencije hrane",
     "@reset": {
         "description": "Button label, clicking on the button will reset user's food preferences."
     },
     "error": "Something went wrong",
     "@error": {},
-    "error_occurred": "An error occurred",
+    "error_occurred": "Došlo je do greške",
     "@error_occurred": {},
     "featureInProgress": "I dalje radimo na ovoj funkciji, budite u toku",
     "@featureInProgress": {},
-    "label_web": "View on the Web",
+    "label_web": "Pogledaj na webu",
     "@label_web": {},
-    "learnMore": "Learn more",
+    "learnMore": "Saznajte Više",
     "@learnMore": {},
-    "incompatible": "Incompatible",
+    "incompatible": "Nekompatibilno",
     "@incompatible": {
         "description": "Short label for product list view: the product is incompatible with your preferences"
     },
-    "compatible": "Compatible",
+    "compatible": "Kompatibilan",
     "@compatible": {
         "description": "Short label for product list view: the product is compatible with your preferences"
     },
@@ -52,26 +52,26 @@
     },
     "licenses": "Licences",
     "@licenses": {},
-    "looking_for": "Looking for",
+    "looking_for": "Tražimo",
     "@looking_for": {
         "description": "Looking for: ${BARCODE}"
     },
     "@Introduction screen": {},
     "welcomeToOpenFoodFacts": "Welcome to Open Food Facts",
     "@welcomeToOpenFoodFacts": {},
-    "whatIsOff": "Open Food Facts is a global non-profit powered by local communities.",
+    "whatIsOff": "Open Food Facts je globalna neprofitna organizacija koju pokreću lokalne zajednice.",
     "@whatIsOff": {
         "description": "Description of Open Food Facts organization."
     },
-    "offUtility": "Choose foods that are good for you and the planet.",
+    "offUtility": "Birajte hranu koja je dobra za vas i planetu.",
     "@offUtility": {
         "description": "Description of what a user can use Open Food Facts for."
     },
-    "productDataUtility": "See the food data relevant to your preferences.",
+    "productDataUtility": "Pogledajte podatke o hrani koji su relevantni za vaše preferencije.",
     "@productDataUtility": {
         "description": "Description of what a user can use the product data for."
     },
-    "healthCardUtility": "Choose foods that are good for you.",
+    "healthCardUtility": "Birajte hranu koja je dobra za vas.",
     "@healthCardUtility": {
         "description": "Description of what a user can use the health data in a product for."
     },

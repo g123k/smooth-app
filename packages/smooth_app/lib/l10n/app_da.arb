@@ -578,7 +578,7 @@
         "description": "Button to switch to 'compare products mode'"
     },
     "retry_button_label": "Forsøg igen",
-    "main_app_color": "Main color of the app",
+    "main_app_color": "Appens basisfarve",
     "@main_app_color": {
         "description": "Heading for the section to pick the main app color"
     }
