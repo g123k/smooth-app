@@ -96,11 +96,12 @@ Widget build(BuildContext context) {
         SizedBox(
           width: screenWidth * .45,
           child: ElevatedButton(
-            child: Text(
+            child: AutoSizeText(
               productPreferences
                   .getPreferenceImportanceFromImportanceId(importanceId)!
                   .name!,
               style: style.copyWith(color: Colors.white),
+              maxLines: 1,
             ),
             style: ElevatedButton.styleFrom(
               primary: _colors[importanceId],

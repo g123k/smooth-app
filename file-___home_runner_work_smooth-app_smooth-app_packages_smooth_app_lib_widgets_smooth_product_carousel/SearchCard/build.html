@@ -75,7 +75,6 @@ Widget build(BuildContext context) {
   final AppLocalizations localizations = AppLocalizations.of(context)!;
   return SmoothCard(
     color: Theme.of(context).colorScheme.background.withOpacity(0.85),
-    margin: EdgeInsets.zero,
     elevation: 0,
     padding: const EdgeInsets.symmetric(horizontal: 20.0),
     child: SizedBox(
@@ -84,13 +83,14 @@ Widget build(BuildContext context) {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: &lt;Widget&gt;[
-          Text(
+          AutoSizeText(
             localizations.welcomeToOpenFoodFacts,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 36.0,
               fontWeight: FontWeight.bold,
             ),
+            maxLines: 2,
           ),
           Text(
             localizations.searchPanelHeader,

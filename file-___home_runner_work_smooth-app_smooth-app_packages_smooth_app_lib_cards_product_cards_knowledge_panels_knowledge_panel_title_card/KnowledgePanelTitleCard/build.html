@@ -124,7 +124,8 @@ Widget build(BuildContext context) {
                   if (knowledgePanelTitleElement.subtitle != null)
                     SizedBox(
                       width: constraints.maxWidth,
-                      child: Text(knowledgePanelTitleElement.subtitle!),
+                      child: Text(knowledgePanelTitleElement.subtitle!)
+                          .selectable(),
                     ),
                 ],
               );
