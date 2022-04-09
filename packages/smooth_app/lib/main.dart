@@ -17,7 +17,7 @@ import 'package:smooth_app/database/dao_string.dart';
 import 'package:smooth_app/database/local_database.dart';
 import 'package:smooth_app/database/product_query.dart';
 import 'package:smooth_app/helpers/analytics_helper.dart';
-import 'package:smooth_app/pages/onboarding/onboarding_flow_navigator.dart';
+import 'package:smooth_app/pages/routes/app_routes.dart';
 import 'package:smooth_app/themes/smooth_theme.dart';
 import 'package:smooth_app/themes/theme_provider.dart';
 
@@ -41,10 +41,12 @@ Future<void> main({final bool screenshots = false}) async {
       appRunner: () => runApp(const SmoothApp()),
     );
   } else {
-    runApp(DevicePreview(
-      enabled: true,
-      builder: (_) => const SmoothApp(),
-    ));
+    runApp(
+      DevicePreview(
+        enabled: true,
+        builder: (_) => const SmoothApp(),
+      ),
+    );
   }
 }
 
@@ -163,15 +165,20 @@ class _SmoothAppState extends State<SmoothApp> {
 
   Widget _buildApp(BuildContext context, Widget? child) {
     final ThemeProvider themeProvider = context.watch<ThemeProvider>();
-    final Widget appWidget = OnboardingFlowNavigator(_userPreferences)
-        .getPageWidget(context, _userPreferences.lastVisitedOnboardingPage);
-    return MaterialApp(
+
+    final AppRoutes routes = AppRoutes(
+      observers: <NavigatorObserver>[
+        SentryNavigatorObserver(),
+      ],
+      userPreferences: _userPreferences,
+    );
+
+    return MaterialApp.router(
+      routeInformationParser: routes.informationParser,
+      routerDelegate: routes.delegate,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: !(kReleaseMode || _screenshots),
-      navigatorObservers: <NavigatorObserver>[
-        SentryNavigatorObserver(),
-      ],
       theme: SmoothTheme.getThemeData(
         Brightness.light,
         themeProvider.colorTag,
@@ -181,7 +188,6 @@ class _SmoothAppState extends State<SmoothApp> {
         themeProvider.colorTag,
       ),
       themeMode: themeProvider.currentThemeMode,
-      home: SmoothAppGetLanguage(appWidget),
     );
   }
 

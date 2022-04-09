@@ -10,7 +10,7 @@ import 'package:smooth_app/database/local_database.dart';
 import 'package:smooth_app/database/product_query.dart';
 import 'package:smooth_app/helpers/product_list_import_export.dart';
 import 'package:smooth_app/pages/abstract_user_preferences.dart';
-import 'package:smooth_app/pages/onboarding/onboarding_flow_navigator.dart';
+import 'package:smooth_app/pages/routes/app_routes.dart';
 
 /// Collapsed/expanded display of "dev mode" for the preferences page.
 ///
@@ -84,7 +84,7 @@ class UserPreferencesDevMode extends AbstractUserPreferences {
               const Text('You then have to restart Flutter to see it again.'),
           onTap: () async {
             userPreferences
-                .setLastVisitedOnboardingPage(OnboardingPage.NOT_STARTED);
+                .setLastVisitedOnboardingPage(OnboardingPages.NOT_STARTED);
             ScaffoldMessenger.of(context)
                 .showSnackBar(const SnackBar(content: Text('Ok')));
           },

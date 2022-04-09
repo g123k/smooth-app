@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:openfoodfacts/personalized_search/preference_importance.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_app/data_models/product_preferences.dart';
-import 'package:smooth_app/pages/onboarding/onboarding_flow_navigator.dart';
+import 'package:smooth_app/pages/routes/app_routes.dart';
 
 class UserPreferences extends ChangeNotifier {
   UserPreferences._shared(final SharedPreferences sharedPreferences)
@@ -78,15 +78,15 @@ class UserPreferences extends ChangeNotifier {
   String? get userCountryCode =>
       _sharedPreferences.getString(_TAG_USER_COUNTRY_CODE);
 
-  Future<void> setLastVisitedOnboardingPage(final OnboardingPage page) async =>
+  Future<void> setLastVisitedOnboardingPage(final OnboardingPages page) async =>
       _sharedPreferences.setInt(_TAG_LAST_VISITED_ONBOARDING_PAGE, page.index);
 
-  OnboardingPage get lastVisitedOnboardingPage {
+  OnboardingPages get lastVisitedOnboardingPage {
     final int? pageIndex =
         _sharedPreferences.getInt(_TAG_LAST_VISITED_ONBOARDING_PAGE);
     return pageIndex == null
-        ? OnboardingPage.NOT_STARTED
-        : OnboardingPage.values[pageIndex];
+        ? OnboardingPages.NOT_STARTED
+        : OnboardingPages.values[pageIndex];
   }
 
   String _getFlagTag(final String key) => _TAG_PREFIX_FLAG + key;

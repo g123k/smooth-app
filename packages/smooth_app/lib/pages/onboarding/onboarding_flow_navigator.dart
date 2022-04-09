@@ -25,11 +25,7 @@ enum OnboardingPage {
 
 /// Decide which page to take the user to.
 class OnboardingFlowNavigator {
-  OnboardingFlowNavigator(this._userPreferences) {
-    if (_historyOnboardingNav.isEmpty) {
-      _historyOnboardingNav.add(_userPreferences.lastVisitedOnboardingPage);
-    }
-  }
+  OnboardingFlowNavigator(this._userPreferences) {}
 
   final UserPreferences _userPreferences;
 
@@ -78,7 +74,7 @@ class OnboardingFlowNavigator {
   }
 
   void navigateToPage(BuildContext context, OnboardingPage page) {
-    _userPreferences.setLastVisitedOnboardingPage(page);
+    //_userPreferences.setLastVisitedOnboardingPage(page);
     _historyOnboardingNav.add(page);
     Navigator.push<Widget>(
       context,
