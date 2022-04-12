@@ -336,11 +336,12 @@ class _ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     final ColorScheme colorScheme = Theme.of(context).buttonTheme.colorScheme!;
     final List<Widget> children = hasImage
         ? <Widget>[
             FloatingActionButton.small(
-              tooltip: 'Retake photo',
+              tooltip: appLocalizations.edit_product_action_retake_picture,
               backgroundColor: colorScheme.background,
               foregroundColor: colorScheme.onBackground,
               onPressed: getImage,
@@ -348,7 +349,7 @@ class _ActionButtons extends StatelessWidget {
             ),
             const SizedBox(width: MEDIUM_SPACE),
             FloatingActionButton.small(
-              tooltip: 'Confirm',
+              tooltip: appLocalizations.edit_product_action_confirm,
               backgroundColor: colorScheme.primary,
               foregroundColor: colorScheme.onPrimary,
               onPressed: () {
@@ -359,7 +360,7 @@ class _ActionButtons extends StatelessWidget {
           ]
         : <Widget>[
             FloatingActionButton.small(
-              tooltip: 'Take photo',
+              tooltip: appLocalizations.edit_product_action_take_picture,
               backgroundColor: colorScheme.background,
               foregroundColor: colorScheme.onBackground,
               onPressed: getImage,
