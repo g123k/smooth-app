@@ -221,7 +221,7 @@ class _SummaryCardState extends State<SummaryCard> {
         );
       }
     }
-
+    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     final Widget attributesContainer = Container(
       alignment: Alignment.topLeft,
       margin: const EdgeInsets.only(bottom: 16),
@@ -275,7 +275,7 @@ class _SummaryCardState extends State<SummaryCard> {
             ),
         if ((statesTags.contains('en:product-name-to-be-completed')) ||
             (statesTags.contains('en:quantity-to-be-completed')))
-          addPanelButton(localizations.completed_basic_details_btn_text,
+          addPanelButton(appLocalizations.summary_card_button_add_basic_details,
               onPressed: () => _showNotImplemented(context)),
       ],
     );
