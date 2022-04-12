@@ -55,9 +55,13 @@ class SocialHandleView extends StatelessWidget {
                 // TODO(M123): Change subject name when we have a different app name
                 final Mailto mailtoLink = Mailto(
                   to: <String>['contact@openfoodfacts.org'],
-                  subject: 'Smoothie help', // TODO(monsieurtanuki): localize
-                  body:
-                      'Version:${packageInfo.version}+${packageInfo.buildNumber} running on ${Platform.operatingSystem}(${Platform.operatingSystemVersion})',
+                  subject: appLocalizations.support_via_email_subject,
+                  body: appLocalizations.support_via_email_content(
+                    packageInfo.version,
+                    packageInfo.buildNumber,
+                    Platform.operatingSystem,
+                    Platform.operatingSystemVersion,
+                  ),
                 );
                 await launch('$mailtoLink');
               },
