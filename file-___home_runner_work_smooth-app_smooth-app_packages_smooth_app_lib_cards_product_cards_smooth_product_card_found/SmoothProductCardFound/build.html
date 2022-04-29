@@ -133,8 +133,7 @@ Widget build(BuildContext context) {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: &lt;Widget&gt;[
                     Text(
-                      product.productName ??
-                          appLocalizations.unknownProductName,
+                      getProductName(product, appLocalizations),
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.headline4,
                     ),
@@ -163,8 +162,11 @@ Widget build(BuildContext context) {
               ),
             ),
             const Padding(padding: EdgeInsets.only(left: VERY_SMALL_SPACE)),
-            Column(
-              children: scores,
+            Padding(
+              padding: const EdgeInsets.all(VERY_SMALL_SPACE),
+              child: Column(
+                children: scores,
+              ),
             ),
           ],
         ),
