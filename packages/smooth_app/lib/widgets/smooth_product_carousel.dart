@@ -18,10 +18,12 @@ class SmoothProductCarousel extends StatefulWidget {
   const SmoothProductCarousel({
     this.containSearchCard = false,
     required this.height,
+    this.onPageChanged,
   });
 
   final bool containSearchCard;
   final double height;
+  final CarouselPageChangedCallback? onPageChanged;
 
   static const EdgeInsets carouselItemHorizontalPadding =
       EdgeInsets.symmetric(horizontal: 20.0);
@@ -35,6 +37,7 @@ class SmoothProductCarousel extends StatefulWidget {
 
 class _SmoothProductCarouselState extends State<SmoothProductCarousel> {
   final CarouselController _controller = CarouselController();
+
   List<String> barcodes = <String>[];
   bool _returnToSearchCard = false;
   int _lastIndex = 0;
@@ -51,6 +54,7 @@ class _SmoothProductCarouselState extends State<SmoothProductCarousel> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
     _model = context.watch<ContinuousScanModel>();
     barcodes = _model.getBarcodes();
     _returnToSearchCard = InheritedDataManager.of(context).showSearchCard;
@@ -89,7 +93,7 @@ class _SmoothProductCarouselState extends State<SmoothProductCarousel> {
         height: widget.height,
         enableInfiniteScroll: false,
         onPageChanged: (int index, CarouselPageChangedReason reason) {
-          _lastIndex = index;
+          widget.onPageChanged?.call(index);
           final InheritedDataManagerState inheritedDataManager =
               InheritedDataManager.of(context);
           if (inheritedDataManager.showSearchCard) {
@@ -199,3 +203,5 @@ class SearchCard extends StatelessWidget {
     );
   }
 }
+
+typedef CarouselPageChangedCallback = void Function(int newPage);

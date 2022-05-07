@@ -905,6 +905,10 @@
     "confirm_clear": "Do you really want to clear?",
     "@confirm_clear": {
         "description": "Asking about whether to clear the list or not"
+    },
+    "scanner_restart_camera": "Restart camera",
+    "@scanner_restart_camera": {
+        "description": "Restart camera button, when the detection is paused"
     }
 }
 

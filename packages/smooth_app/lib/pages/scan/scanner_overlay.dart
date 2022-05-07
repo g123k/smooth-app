@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_app/data_models/continuous_scan_model.dart';
 import 'package:smooth_app/generic_lib/animations/smooth_reveal_animation.dart';
@@ -11,7 +12,7 @@ import 'package:smooth_app/widgets/smooth_product_carousel.dart';
 /// clear and compare buttons row.
 ///
 /// The camera preview should be passed to [backgroundChild].
-class ScannerOverlay extends StatelessWidget {
+class ScannerOverlay extends StatefulWidget {
   const ScannerOverlay({
     required this.topChild,
     this.backgroundChild,
@@ -27,8 +28,19 @@ class ScannerOverlay extends StatelessWidget {
   static const double buttonRowHeightPx = 48;
 
   @override
+  State<ScannerOverlay> createState() => _ScannerOverlayState();
+}
+
+class _ScannerOverlayState extends State<ScannerOverlay> {
+  final ValueNotifier<ScannerState> _state = ValueNotifier<ScannerState>(
+    ScannerState.startedAuto,
+  );
+  int _currentPage = 0;
+
+  @override
   Widget build(BuildContext context) {
     final ContinuousScanModel model = context.watch<ContinuousScanModel>();
+
     return LayoutBuilder(
       builder: (
         BuildContext context,
@@ -46,59 +58,75 @@ class ScannerOverlay extends StatelessWidget {
 
         final Size scannerContainerSize = Size(
           screenSize.width,
-          availableScanHeight - carouselBottomPadding,
+          availableScanHeight - ScannerOverlay.carouselBottomPadding,
         );
 
-        return Container(
-          color: Colors.black,
-          child: Stack(
-            children: <Widget>[
-              //Scanner
-              if (backgroundChild != null)
-                // Force the child to take the full space, otherwise the
-                // [VisibilityDetector] may return incorrect results
+        return ChangeNotifierProvider<ValueNotifier<ScannerState>>(
+          create: (_) => _state,
+          child: Container(
+            color: Colors.black,
+            child: Stack(
+              children: <Widget>[
+                //Scanner
+                if (widget.backgroundChild != null)
+                  // Force the child to take the full space, otherwise the
+                  // [VisibilityDetector] may return incorrect results
+                  SmoothRevealAnimation(
+                    delay: 400,
+                    startOffset: Offset.zero,
+                    animationCurve: Curves.easeInOutBack,
+                    child: SizedBox.expand(
+                      child: widget.backgroundChild,
+                    ),
+                  ),
+                // Scanning area overlay
                 SmoothRevealAnimation(
                   delay: 400,
-                  startOffset: Offset.zero,
+                  startOffset: const Offset(0.0, 0.1),
                   animationCurve: Curves.easeInOutBack,
-                  child: SizedBox.expand(
-                    child: backgroundChild,
-                  ),
-                ),
-              // Scanning area overlay
-              SmoothRevealAnimation(
-                delay: 400,
-                startOffset: const Offset(0.0, 0.1),
-                animationCurve: Curves.easeInOutBack,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints.tight(
-                    scannerContainerSize,
-                  ),
-                  child: Center(child: topChild),
-                ),
-              ),
-              // Product carousel
-              SmoothRevealAnimation(
-                delay: 400,
-                startOffset: const Offset(0.0, -0.1),
-                animationCurve: Curves.easeInOutBack,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    const SafeArea(top: true, child: ScanHeader()),
-                    const Spacer(),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(bottom: carouselBottomPadding),
-                      child: SmoothProductCarousel(
-                        containSearchCard: true,
-                        height: carouselHeight,
-                      ),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints.tight(
+                      scannerContainerSize,
                     ),
-                  ],
+                    child: Center(child: widget.topChild),
+                  ),
                 ),
-              ),
-            ],
+                // Product carousel
+                SmoothRevealAnimation(
+                  delay: 400,
+                  startOffset: const Offset(0.0, -0.1),
+                  animationCurve: Curves.easeInOutBack,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const SafeArea(top: true, child: ScanHeader()),
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: ScannerOverlay.carouselBottomPadding),
+                        child: SmoothProductCarousel(
+                          containSearchCard: true,
+                          height: carouselHeight,
+                          onPageChanged: (int newPage) {
+                            setState(() {
+                              if (newPage == 0) {
+                                _state.value = ScannerState.startedAuto;
+                              } else if (_currentPage == 0 &&
+                                  newPage > 0 &&
+                                  _state.value == ScannerState.startedAuto) {
+                                _state.value = ScannerState.pausedAuto;
+                              }
+
+                              _currentPage = newPage;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -118,9 +146,44 @@ class ScannerVisorWidget extends StatelessWidget {
       screenSize.width * ScannerOverlay.scannerHeightPct,
     );
 
-    return SmoothViewFinder(
-      boxSize: scannerSize,
-      lineLength: screenSize.width * 0.8,
-    );
+    final ValueNotifier<ScannerState> scannerState =
+        context.watch<ValueNotifier<ScannerState>>();
+
+    if (scannerState.value.isRunning) {
+      return SmoothViewFinder(
+        boxSize: scannerSize,
+        lineLength: screenSize.width * 0.8,
+      );
+    } else {
+      final AppLocalizations localizations = AppLocalizations.of(context)!;
+
+      return SizedBox.fromSize(
+        size: scannerSize,
+        child: Center(
+          child: ElevatedButton.icon(
+            icon: const Icon(Icons.camera),
+            label: Text(localizations.scanner_restart_camera),
+            onPressed: () {
+              scannerState.value = ScannerState.startedManual;
+            },
+          ),
+        ),
+      );
+    }
   }
+}
+
+enum ScannerState {
+  startedAuto,
+  startedManual,
+  pausedAuto,
+  pausedManual,
+}
+
+extension ScannerStateExtension on ScannerState {
+  bool get isRunning =>
+      this == ScannerState.startedAuto || this == ScannerState.startedManual;
+
+  bool get isPaused =>
+      this == ScannerState.pausedAuto || this == ScannerState.pausedManual;
 }

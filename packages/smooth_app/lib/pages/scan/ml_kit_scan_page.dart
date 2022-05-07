@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
@@ -12,6 +13,7 @@ import 'package:smooth_app/helpers/camera_helper.dart';
 import 'package:smooth_app/helpers/collections_helper.dart';
 import 'package:smooth_app/pages/scan/lifecycle_manager.dart';
 import 'package:smooth_app/pages/scan/mkit_scan_helper.dart';
+import 'package:smooth_app/pages/scan/scanner_overlay.dart';
 import 'package:smooth_app/pages/user_preferences_dev_mode.dart';
 import 'package:smooth_app/widgets/lifecycle_aware_widget.dart';
 import 'package:smooth_app/widgets/screen_visibility.dart';
@@ -23,8 +25,33 @@ class MLKitScannerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ScreenVisibilityDetector(
-      child: _MLKitScannerPageContent(),
+    return Stack(
+      children: <Widget>[
+        const ScreenVisibilityDetector(
+          child: _MLKitScannerPageContent(),
+        ),
+        Consumer<ValueNotifier<ScannerState>>(
+          builder: (
+            BuildContext context,
+            ValueNotifier<ScannerState> state,
+            Widget? child,
+          ) {
+            if (state.value.isPaused) {
+              return child!;
+            } else {
+              return const SizedBox.shrink();
+            }
+          },
+          child: Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+              child: Container(
+                color: Colors.black.withOpacity(0.1),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -92,12 +119,28 @@ class MLKitScannerPageState
     if (mounted) {
       _model = context.watch<ContinuousScanModel>();
       _userPreferences = context.watch<UserPreferences>();
+      context.read<ValueNotifier<ScannerState>>()
+        ..removeListener(_onCarouselStateChanged)
+        ..addListener(_onCarouselStateChanged);
     }
 
     // Relaunch the feed after a hot reload
     if (_controller == null) {
       _startLiveFeed();
     }
+  }
+
+  void _onCarouselStateChanged() {
+    final ScannerState state =
+        context.read<ValueNotifier<ScannerState>>().value;
+
+    if (state.isRunning) {
+      _resumeStream();
+    } else {
+      _pauseStream();
+    }
+
+    setStateSafe(() {});
   }
 
   @override
@@ -107,7 +150,9 @@ class MLKitScannerPageState
     return LifeCycleManager(
       onStart: _startLiveFeed,
       onResume: _startLiveFeed,
-      onPause: () => _stopImageStream(fromPauseEvent: true),
+      onPause: () {
+        print("*** ONE PAUSE");
+      }, // TODO
       child: _buildScannerWidget(),
     );
   }
@@ -115,6 +160,8 @@ class MLKitScannerPageState
   Widget _buildScannerWidget() {
     // Showing the black scanner background + the icon when the scanner is
     // loading or stopped
+    print('*** IS INIT : $isCameraNotInitialized');
+
     if (isCameraNotInitialized) {
       return const SizedBox.shrink();
     }
@@ -151,14 +198,17 @@ class MLKitScannerPageState
     return _controller == null ||
         _controller!.value.isInitialized == false ||
         stoppingCamera ||
-        _controller!.value.isPreviewPaused ||
         !_controller!.value.isStreamingImages;
   }
 
   Future<void> _startLiveFeed() async {
+    print("**** START");
+
     if (_controller != null || _camera == null) {
       return;
     }
+
+    print("**** START 1");
 
     stoppingCamera = false;
 
@@ -229,6 +279,18 @@ class MLKitScannerPageState
     _redrawScreen();
   }
 
+  Future<void> _pauseStream() async {
+    print("**** PAUSE");
+    await _controller?.pausePreview();
+    _streamSubscription?.pause();
+  }
+
+  Future<void> _resumeStream() async {
+    print("**** RESUME");
+    await _controller?.resumePreview();
+    _streamSubscription?.resume();
+  }
+
   Future<void> _onNewBarcodeDetected(List<String> barcodes) async {
     for (final String barcode in barcodes) {
       if (await _model.onScan(barcode)) {
@@ -247,6 +309,8 @@ class MLKitScannerPageState
   }
 
   Future<void> _stopImageStream({bool fromPauseEvent = false}) async {
+    print("**** STOP");
+
     if (stoppingCamera) {
       return;
     }
@@ -273,6 +337,7 @@ class MLKitScannerPageState
 
   void _redrawScreen() {
     setStateSafe(() {});
+    _model.onScan('3274080005003');
   }
 
   /// The camera is fully closed at this step.
