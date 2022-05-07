@@ -163,7 +163,7 @@ class MLKitScannerPageState
 
     _controller = CameraController(
       _camera!,
-      ResolutionPreset.high,
+      ResolutionPreset.medium,
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.yuv420,
     );
