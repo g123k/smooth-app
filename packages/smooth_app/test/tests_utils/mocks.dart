@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:smooth_app/data_models/product_preferences.dart';
 import 'package:smooth_app/data_models/user_management_provider.dart';
 import 'package:smooth_app/data_models/user_preferences.dart';
+import 'package:smooth_app/database/local_database.dart';
 import 'package:smooth_app/themes/smooth_theme.dart';
 import 'package:smooth_app/themes/theme_provider.dart';
 
@@ -20,6 +21,7 @@ class MockSmoothApp extends StatelessWidget {
     this.userManagementProvider,
     this.productPreferences,
     this.themeProvider,
+    this.localDatabase,
     this.child,
   );
 
@@ -27,18 +29,28 @@ class MockSmoothApp extends StatelessWidget {
   final UserManagementProvider userManagementProvider;
   final ProductPreferences productPreferences;
   final ThemeProvider themeProvider;
+  final LocalDatabase localDatabase;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: <ChangeNotifierProvider<dynamic>>[
-          ChangeNotifierProvider<UserPreferences>.value(value: userPreferences),
+        providers: <ChangeNotifierProvider<ChangeNotifier>>[
+          ChangeNotifierProvider<UserPreferences>.value(
+            value: userPreferences,
+          ),
           ChangeNotifierProvider<ProductPreferences>.value(
-              value: productPreferences),
-          ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
+            value: productPreferences,
+          ),
+          ChangeNotifierProvider<LocalDatabase>.value(
+            value: localDatabase,
+          ),
+          ChangeNotifierProvider<ThemeProvider>.value(
+            value: themeProvider,
+          ),
           ChangeNotifierProvider<UserManagementProvider>.value(
-              value: userManagementProvider),
+            value: userManagementProvider,
+          ),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

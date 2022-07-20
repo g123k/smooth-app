@@ -142,7 +142,7 @@ class _SmoothDialogTitle extends StatelessWidget {
           ),
         ),
         Divider(color: Theme.of(context).colorScheme.onBackground),
-        const SizedBox(height: 12),
+        const SizedBox(height: 12.0),
       ],
     );
   }

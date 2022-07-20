@@ -31,15 +31,22 @@ class LocalDatabase extends ChangeNotifier {
   @override
   void notifyListeners() => super.notifyListeners();
 
-  static Future<LocalDatabase> getLocalDatabase() async {
+  static Future<LocalDatabase> getLocalDatabase({
+    bool? fromTests = false,
+  }) async {
     // sql from there
     final String databasesRootPath;
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      // as suggested in https://pub.dev/documentation/sqflite/latest/sqflite/getDatabasesPath.html
-      final Directory directory = await getLibraryDirectory();
-      databasesRootPath = directory.path;
+    if (fromTests == true) {
+      databasesRootPath =
+          join(Directory.current.path, '/test/hive_testing_path');
     } else {
-      databasesRootPath = await getDatabasesPath();
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        // as suggested in https://pub.dev/documentation/sqflite/latest/sqflite/getDatabasesPath.html
+        final Directory directory = await getLibraryDirectory();
+        databasesRootPath = directory.path;
+      } else {
+        databasesRootPath = await getDatabasesPath();
+      }
     }
     final String databasePath = join(databasesRootPath, 'smoothie.db');
     final Database database = await openDatabase(
