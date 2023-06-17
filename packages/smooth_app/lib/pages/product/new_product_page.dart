@@ -169,12 +169,51 @@ class _ProductPageState extends State<ProductPage> with TraceableClientMixin {
     final AppLocalizations appLocalizations = AppLocalizations.of(context);
     final LocalDatabase localDatabase = context.read<LocalDatabase>();
     final DaoProductList daoProductList = DaoProductList(localDatabase);
+    final List<Widget> widgets = <Widget>[
+      Align(
+        heightFactor: 0.7,
+        alignment: AlignmentDirectional.topStart,
+        child: ProductImageCarousel(
+          _product,
+          height: 200,
+          controller: _carouselController,
+          onUpload: _refreshProduct,
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: SMALL_SPACE,
+        ),
+        child: HeroMode(
+          enabled:
+              widget.withHeroAnimation && widget.heroTag?.isNotEmpty == true,
+          child: Hero(
+            tag: widget.heroTag ?? '',
+            child: SummaryCard(
+              _product,
+              _productPreferences,
+              isFullVersion: true,
+              showUnansweredQuestions: true,
+            ),
+          ),
+        ),
+      ),
+      _buildActionBar(appLocalizations),
+      _buildListIfRelevantWidget(
+        appLocalizations,
+        daoProductList,
+      ),
+      _buildKnowledgePanelCards(),
+      if (_product.website != null && _product.website!.trim().isNotEmpty)
+        _buildWebsiteWidget(_product.website!.trim()),
+    ];
+
     return RefreshIndicator(
       onRefresh: () => ProductRefresher().fetchAndRefresh(
         barcode: _barcode,
         widget: this,
       ),
-      child: ListView(
+      child: ListView.builder(
         // /!\ Smart Dart
         // `physics: const AlwaysScrollableScrollPhysics()`
         // means that we will always scroll, even if it's pointless.
@@ -182,44 +221,8 @@ class _ProductPageState extends State<ProductPage> with TraceableClientMixin {
         // triggered on a ListView smaller than the screen
         // (as there will be no scroll).
         physics: const AlwaysScrollableScrollPhysics(),
-        children: <Widget>[
-          Align(
-            heightFactor: 0.7,
-            alignment: AlignmentDirectional.topStart,
-            child: ProductImageCarousel(
-              _product,
-              height: 200,
-              controller: _carouselController,
-              onUpload: _refreshProduct,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: SMALL_SPACE,
-            ),
-            child: HeroMode(
-              enabled: widget.withHeroAnimation &&
-                  widget.heroTag?.isNotEmpty == true,
-              child: Hero(
-                tag: widget.heroTag ?? '',
-                child: SummaryCard(
-                  _product,
-                  _productPreferences,
-                  isFullVersion: true,
-                  showUnansweredQuestions: true,
-                ),
-              ),
-            ),
-          ),
-          _buildActionBar(appLocalizations),
-          _buildListIfRelevantWidget(
-            appLocalizations,
-            daoProductList,
-          ),
-          _buildKnowledgePanelCards(),
-          if (_product.website != null && _product.website!.trim().isNotEmpty)
-            _buildWebsiteWidget(_product.website!.trim()),
-        ],
+        itemCount: widgets.length,
+        itemBuilder: (BuildContext context, int position) => widgets[position],
       ),
     );
   }

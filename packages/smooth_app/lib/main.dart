@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:noob/noob.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -75,13 +76,21 @@ Future<void> launchSmoothApp({
     return;
   }
   final WidgetsBinding widgetsBinding =
-      WidgetsFlutterBinding.ensureInitialized();
+      TrackingBuildOwnerWidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   if (kReleaseMode) {
     await AnalyticsHelper.initSentry(
         appRunner: () => runApp(const SmoothApp()));
   } else {
+    // initialize `BuildTracker`
+    final tracker =
+        BuildTracker(printBuildFrameIncludeRebuildDirtyWidget: false);
+
+    // print top 10 stacks leading to rebuilds every 10 seconds
+    Timer.periodic(const Duration(seconds: 10),
+        (_) => tracker.printTopScheduleBuildForStacks());
+
     runApp(
       DevicePreview(
         enabled: true,
