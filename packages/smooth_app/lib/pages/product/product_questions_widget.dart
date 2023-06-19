@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
@@ -6,9 +8,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:smooth_app/database/local_database.dart';
 import 'package:smooth_app/generic_lib/design_constants.dart';
 import 'package:smooth_app/generic_lib/duration_constants.dart';
-import 'package:smooth_app/helpers/robotoff_insight_helper.dart';
 import 'package:smooth_app/pages/hunger_games/question_page.dart';
-import 'package:smooth_app/query/product_questions_query.dart';
+import 'package:smooth_app/pages/product/product_questions_utils.dart';
 
 class ProductQuestionsWidget extends StatefulWidget {
   const ProductQuestionsWidget(this.product);
@@ -29,10 +30,10 @@ class _ProductQuestionsWidgetState extends State<ProductQuestionsWidget>
   /// - Loading
   /// - With questions: questions available AND never answered
   /// - Without questions: when there is no question OR a generic error happened
-  _ProductQuestionsState _state = const _ProductQuestionsLoading();
+  ProductQuestionsState _state = const ProductQuestionsLoading();
 
-  bool _annotationVoted = false;
   bool _keepWidgetAlive = true;
+  StreamSubscription<ProductQuestionsState>? _streamSubscription;
 
   @override
   void initState() {
@@ -65,7 +66,7 @@ class _ProductQuestionsWidgetState extends State<ProductQuestionsWidget>
     super.build(context);
 
     return AnimatedCrossFade(
-      crossFadeState: _state is _ProductQuestionsWithoutQuestions
+      crossFadeState: _state is ProductQuestionsWithoutQuestions
           ? CrossFadeState.showFirst
           : CrossFadeState.showSecond,
       duration: SmoothAnimationsDuration.long,
@@ -78,7 +79,7 @@ class _ProductQuestionsWidgetState extends State<ProductQuestionsWidget>
         // [Shimmer] doesn't support [Ink]
         final Color backgroundColor = Theme.of(context).colorScheme.primary;
 
-        if (_state is _ProductQuestionsWithQuestions) {
+        if (_state is ProductQuestionsWithQuestions) {
           return Semantics(
             value: appLocalizations.tap_to_answer_hint,
             button: true,
@@ -89,7 +90,7 @@ class _ProductQuestionsWidgetState extends State<ProductQuestionsWidget>
                 context,
                 product: widget.product,
                 questions:
-                    (_state as _ProductQuestionsWithQuestions).questions.toList(
+                    (_state as ProductQuestionsWithQuestions).questions.toList(
                           growable: false,
                         ),
                 updateProductUponAnswers: _updateProductUponAnswers,
@@ -163,75 +164,37 @@ class _ProductQuestionsWidgetState extends State<ProductQuestionsWidget>
   }
 
   Future<void> _reloadQuestions() async {
-    setState(() => _state = const _ProductQuestionsLoading());
-    final List<RobotoffQuestion>? list = await _loadProductQuestions();
-
-    if (!mounted) {
-      return;
-    }
-
-    if (list?.isNotEmpty == true && !_annotationVoted) {
-      setState(() => _state = _ProductQuestionsWithQuestions(list!));
-    } else {
-      setState(() => _state = const _ProductQuestionsWithoutQuestions());
-    }
-  }
-
-  Future<List<RobotoffQuestion>?> _loadProductQuestions() async {
     final LocalDatabase localDatabase = context.read<LocalDatabase>();
-    final List<RobotoffQuestion> questions =
-        await ProductQuestionsQuery(widget.product.barcode!)
-            .getQuestions(localDatabase, 3);
-    if (!mounted) {
-      return null;
-    }
-    final RobotoffInsightHelper robotoffInsightHelper =
-        RobotoffInsightHelper(localDatabase);
-    _annotationVoted =
-        await robotoffInsightHelper.areQuestionsAlreadyVoted(questions);
-    return questions;
+    final String barcode = widget.product.barcode!;
+
+    await _streamSubscription?.cancel();
+
+    _streamSubscription =
+        ProductQuestionsHelper.loadQuestionsFor(localDatabase, barcode)
+            .listen((ProductQuestionsState state) {
+      setState(() => _state = state);
+    });
   }
 
   Future<void> _updateProductUponAnswers() async {
-    // Reload the product questions, they might have been answered.
-    // Or the backend may have new ones.
     final LocalDatabase localDatabase = context.read<LocalDatabase>();
-    final List<RobotoffQuestion> questions =
-        await _loadProductQuestions() ?? <RobotoffQuestion>[];
-    if (!mounted) {
-      return;
-    }
-    final RobotoffInsightHelper robotoffInsightHelper =
-        RobotoffInsightHelper(localDatabase);
-    if (questions.isEmpty) {
-      await robotoffInsightHelper
-          .removeInsightAnnotationsSavedForProdcut(widget.product.barcode!);
-    }
-    _annotationVoted =
-        await robotoffInsightHelper.areQuestionsAlreadyVoted(questions);
+    final String barcode = widget.product.barcode!;
+
+    await ProductQuestionsHelper.updateProductUponAnswers(
+      localDatabase,
+      barcode,
+    );
   }
 
   @override
   bool get wantKeepAlive => _keepWidgetAlive;
-}
 
-// Widget State
-sealed class _ProductQuestionsState {
-  const _ProductQuestionsState();
-}
-
-class _ProductQuestionsLoading extends _ProductQuestionsState {
-  const _ProductQuestionsLoading();
-}
-
-class _ProductQuestionsWithQuestions extends _ProductQuestionsState {
-  const _ProductQuestionsWithQuestions(this.questions);
-
-  final List<RobotoffQuestion> questions;
-}
-
-class _ProductQuestionsWithoutQuestions extends _ProductQuestionsState {
-  const _ProductQuestionsWithoutQuestions();
+  @override
+  void dispose() {
+    _streamSubscription?.cancel();
+    _streamSubscription = null;
+    super.dispose();
+  }
 }
 
 /// Indicates whether we should force a [ProductQuestionsWidget] Widget

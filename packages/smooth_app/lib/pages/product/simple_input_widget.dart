@@ -93,6 +93,8 @@ class _SimpleInputWidgetState extends State<SimpleInputWidget> {
           },
         ),
         Divider(color: themeData.colorScheme.onBackground),
+        if (widget.helper.getInsightType() != null)
+          _SimpleInputSuggestions(helper: widget.helper),
         AnimatedList(
           key: _listKey,
           initialItemCount: widget.helper.terms.length,
@@ -174,5 +176,24 @@ class _SimpleInputWidgetState extends State<SimpleInputWidget> {
       });
       SmoothHapticFeedback.lightNotification();
     }
+  }
+}
+
+class _SimpleInputSuggestions extends StatefulWidget {
+  const _SimpleInputSuggestions({
+    required this.helper,
+  });
+
+  final AbstractSimpleInputPageHelper helper;
+
+  @override
+  State<_SimpleInputSuggestions> createState() =>
+      _SimpleInputSuggestionsState();
+}
+
+class _SimpleInputSuggestionsState extends State<_SimpleInputSuggestions> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }
