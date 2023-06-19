@@ -89,6 +89,10 @@ abstract class AbstractSimpleInputPageHelper extends ChangeNotifier {
   /// Returns additional examples about the "add" text field.
   String? getAddExplanations(final AppLocalizations appLocalizations) => null;
 
+  /// Returns an insight type to provide questions from Robotoff.
+  /// Null means no question/suggestion
+  InsightType? getInsightType() => null;
+
   /// Stamp to identify similar updates on the same product.
   BackgroundTaskDetailsStamp getStamp();
 
@@ -316,6 +320,9 @@ class SimpleInputPageLabelHelper extends AbstractSimpleInputPageHelper {
   Widget? getIcon() => const Icon(Icons.local_offer);
 
   @override
+  InsightType? getInsightType() => InsightType.LABEL;
+
+  @override
   BackgroundTaskDetailsStamp getStamp() => BackgroundTaskDetailsStamp.labels;
 
   @override
@@ -361,6 +368,9 @@ class SimpleInputPageCategoryHelper extends AbstractSimpleInputPageHelper {
   @override
   String getTypeLabel(AppLocalizations appLocalizations) =>
       appLocalizations.edit_product_form_item_categories_type;
+
+  @override
+  InsightType? getInsightType() => InsightType.CATEGORY;
 
   @override
   TagType? getTagType() => TagType.CATEGORIES;
