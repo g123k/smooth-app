@@ -7,6 +7,7 @@ import 'package:openfoodfacts/openfoodfacts.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_app/database/local_database.dart';
 import 'package:smooth_app/generic_lib/design_constants.dart';
+import 'package:smooth_app/generic_lib/duration_constants.dart';
 import 'package:smooth_app/pages/product/product_questions_utils.dart';
 import 'package:smooth_app/pages/product/simple_input_page_helpers.dart';
 import 'package:smooth_app/widgets/smooth_icon_button.dart';
@@ -34,7 +35,7 @@ class _SimpleInputSuggestionsState extends State<SimpleInputSuggestions>
       context.read<LocalDatabase>(),
       widget.helper.product.barcode!,
       count: 5,
-      type: widget.helper.getInsightType()!,
+      type: widget.helper.getInsightType(),
     ).listen(
       (ProductQuestionsState state) => setState(() => _questionsState = state),
     );
@@ -53,6 +54,14 @@ class _SimpleInputSuggestionsState extends State<SimpleInputSuggestions>
         _ProductsQuestionsList(questions: list),
       _ => EMPTY_WIDGET
     };
+  }
+
+  Future<void> _onApproveAnswer(RobotoffQuestion question) async {
+    ProductQuestionsHelper.updateProductUponAnswers(localDatabase, barcode)
+  }
+
+  Future<void> _onDenyAnswer() async {
+    
   }
 
   @override
@@ -92,6 +101,7 @@ class _ProductQuestionsLoading extends StatelessWidget {
           leading: _ProductQuestionSuggestedIndicator(),
           title: Text('Chargement des suggestions'),
         ),
+        Divider(),
       ],
     );
   }
@@ -104,22 +114,27 @@ class _ProductsQuestionsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: questions
+    return Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+      ...questions
           .map(
-            (RobotoffQuestion item) => _ProductQuestionsItem(question: item),
+            (RobotoffQuestion item) => _ProductQuestionsItem(
+              question: item,
+              state: null,
+            ),
           )
           .toList(growable: false),
-    );
+      const Divider(),
+    ]);
   }
 }
 
 class _ProductQuestionsItem extends StatelessWidget {
   const _ProductQuestionsItem({
     required this.question,
+    required this.state,
   });
 
+  final _RobotoffQuestionState state;
   final RobotoffQuestion question;
 
   @override
@@ -141,20 +156,43 @@ class _ProductQuestionsItem extends StatelessWidget {
       ),
       trailing: Row(
         children: <Widget>[
-          SmoothIconButton(
-            icon: const Icon(Icons.check),
-            semanticLabel: 'Accepter la suggestion',
-            onPressed: () {},
+          AnimatedOpacity(
+            opacity: state == _RobotoffQuestionState.unanswered ? 1.0 : 0.0,
+            duration: SmoothAnimationsDuration.medium,
+            child: SmoothIconButton(
+              icon: const Icon(Icons.check),
+              semanticLabel: 'Accepter la suggestion',
+              onPressed: () {},
+            ),
           ),
-          SmoothIconButton(
-            icon: const Icon(Icons.close),
-            semanticLabel: 'Refuser la suggestion',
-            onPressed: () {},
+          AnimatedOpacity(
+            opacity: state == _RobotoffQuestionState.unanswered ? 1.0 : 0.0,
+            duration: SmoothAnimationsDuration.medium,
+            child: SmoothIconButton(
+              icon: const Icon(Icons.close),
+              semanticLabel: 'Refuser la suggestion',
+              onPressed: () {},
+            ),
+          ),
+          AnimatedOpacity(
+            opacity: state != _RobotoffQuestionState.unanswered ? 1.0 : 0.0,
+            duration: SmoothAnimationsDuration.medium,
+            child: SmoothIconButton(
+              icon: const Icon(Icons.delete),
+              semanticLabel: 'Supprimer la suggestion',
+              onPressed: () {},
+            ),
           ),
         ],
       ),
     );
   }
+}
+
+enum _RobotoffQuestionState {
+  unanswered,
+  approved,
+  denied,
 }
 
 class _ProductQuestionSuggestedIndicator extends StatelessWidget {

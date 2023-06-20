@@ -77,6 +77,26 @@ class ProductQuestionsHelper {
 
     return robotoffInsightHelper.areQuestionsAlreadyVoted(questions);
   }
+
+  static Future<void> _saveAnswer(
+    final RobotoffQuestion question,
+    final InsightAnnotation insightAnnotation,
+  ) async {
+    /*final String? barcode = question.barcode;
+    final String? insightId = question.insightId;
+    if (barcode == null || insightId == null) {
+      return;
+    }
+    if (OpenFoodAPIConfiguration.globalUser == null) {
+      _anonymousAnnotationList.putIfAbsent(insightId, () => insightAnnotation);
+    }
+    await BackgroundTaskHungerGames.addTask(
+      barcode: barcode,
+      insightId: insightId,
+      insightAnnotation: insightAnnotation,
+      widget: this,
+    );*/
+  }
 }
 
 sealed class ProductQuestionsState {
