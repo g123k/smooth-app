@@ -6,6 +6,7 @@ import 'package:smooth_app/helpers/collections_helper.dart';
 import 'package:smooth_app/helpers/haptic_feedback_helper.dart';
 import 'package:smooth_app/pages/product/explanation_widget.dart';
 import 'package:smooth_app/pages/product/simple_input_page_helpers.dart';
+import 'package:smooth_app/pages/product/simple_input_suggestions.dart';
 import 'package:smooth_app/pages/product/simple_input_text_field.dart';
 
 /// Simple input widget: we have a list of terms, we add, we remove.
@@ -101,7 +102,7 @@ class _SimpleInputWidgetState extends State<SimpleInputWidget> {
         ),
         Divider(color: themeData.colorScheme.onBackground),
         if (widget.helper.getInsightType() != null)
-          _SimpleInputSuggestions(helper: widget.helper),
+          SimpleInputSuggestions(helper: widget.helper),
         AnimatedList(
           key: _listKey,
           initialItemCount: _localTerms.length,
@@ -179,24 +180,5 @@ class _SimpleInputWidgetState extends State<SimpleInputWidget> {
 
       SmoothHapticFeedback.lightNotification();
     }
-  }
-}
-
-class _SimpleInputSuggestions extends StatefulWidget {
-  const _SimpleInputSuggestions({
-    required this.helper,
-  });
-
-  final AbstractSimpleInputPageHelper helper;
-
-  @override
-  State<_SimpleInputSuggestions> createState() =>
-      _SimpleInputSuggestionsState();
-}
-
-class _SimpleInputSuggestionsState extends State<_SimpleInputSuggestions> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }

@@ -14,7 +14,7 @@ class ProductQuestionsHelper {
     InsightType? type,
   }) async* {
     assert(barcode.isNotEmpty);
-    yield const ProductQuestionsLoading();
+    yield const ProductQuestionsLoadingState();
 
     final (List<RobotoffQuestion>? list, bool annotationVoted) =
         await _loadProductQuestions(
@@ -25,9 +25,9 @@ class ProductQuestionsHelper {
     );
 
     if (list?.isNotEmpty == true && !annotationVoted) {
-      yield ProductQuestionsWithQuestions(list!);
+      yield ProductQuestionsWithQuestionsState(list!);
     } else {
-      yield const ProductQuestionsWithoutQuestions();
+      yield const ProductQuestionsWithoutQuestionsState();
     }
   }
 
@@ -83,16 +83,16 @@ sealed class ProductQuestionsState {
   const ProductQuestionsState();
 }
 
-class ProductQuestionsLoading extends ProductQuestionsState {
-  const ProductQuestionsLoading();
+class ProductQuestionsLoadingState extends ProductQuestionsState {
+  const ProductQuestionsLoadingState();
 }
 
-class ProductQuestionsWithQuestions extends ProductQuestionsState {
-  const ProductQuestionsWithQuestions(this.questions);
+class ProductQuestionsWithQuestionsState extends ProductQuestionsState {
+  const ProductQuestionsWithQuestionsState(this.questions);
 
   final List<RobotoffQuestion> questions;
 }
 
-class ProductQuestionsWithoutQuestions extends ProductQuestionsState {
-  const ProductQuestionsWithoutQuestions();
+class ProductQuestionsWithoutQuestionsState extends ProductQuestionsState {
+  const ProductQuestionsWithoutQuestionsState();
 }

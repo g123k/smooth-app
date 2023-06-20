@@ -30,7 +30,7 @@ class _ProductQuestionsWidgetState extends State<ProductQuestionsWidget>
   /// - Loading
   /// - With questions: questions available AND never answered
   /// - Without questions: when there is no question OR a generic error happened
-  ProductQuestionsState _state = const ProductQuestionsLoading();
+  ProductQuestionsState _state = const ProductQuestionsLoadingState();
 
   bool _keepWidgetAlive = true;
   StreamSubscription<ProductQuestionsState>? _streamSubscription;
@@ -66,7 +66,7 @@ class _ProductQuestionsWidgetState extends State<ProductQuestionsWidget>
     super.build(context);
 
     return AnimatedCrossFade(
-      crossFadeState: _state is ProductQuestionsWithoutQuestions
+      crossFadeState: _state is ProductQuestionsWithoutQuestionsState
           ? CrossFadeState.showFirst
           : CrossFadeState.showSecond,
       duration: SmoothAnimationsDuration.long,
@@ -79,7 +79,7 @@ class _ProductQuestionsWidgetState extends State<ProductQuestionsWidget>
         // [Shimmer] doesn't support [Ink]
         final Color backgroundColor = Theme.of(context).colorScheme.primary;
 
-        if (_state is ProductQuestionsWithQuestions) {
+        if (_state is ProductQuestionsWithQuestionsState) {
           return Semantics(
             value: appLocalizations.tap_to_answer_hint,
             button: true,
@@ -89,10 +89,11 @@ class _ProductQuestionsWidgetState extends State<ProductQuestionsWidget>
               onTap: () => openQuestionPage(
                 context,
                 product: widget.product,
-                questions:
-                    (_state as ProductQuestionsWithQuestions).questions.toList(
-                          growable: false,
-                        ),
+                questions: (_state as ProductQuestionsWithQuestionsState)
+                    .questions
+                    .toList(
+                      growable: false,
+                    ),
                 updateProductUponAnswers: _updateProductUponAnswers,
               ),
               child: Ink(
