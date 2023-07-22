@@ -15,13 +15,13 @@ import 'package:smooth_app/cards/product_cards/smooth_product_card_not_found.dar
 import 'package:smooth_app/cards/product_cards/smooth_product_card_thanks.dart';
 import 'package:smooth_app/data_models/continuous_scan_model.dart';
 import 'package:smooth_app/data_models/tagline.dart';
-import 'package:smooth_app/data_models/user_preferences.dart';
 import 'package:smooth_app/generic_lib/design_constants.dart';
 import 'package:smooth_app/helpers/app_helper.dart';
 import 'package:smooth_app/pages/inherited_data_manager.dart';
 import 'package:smooth_app/pages/navigator/app_navigator.dart';
 import 'package:smooth_app/pages/scan/scan_product_card_loader.dart';
 import 'package:smooth_app/pages/scan/search_page.dart';
+import 'package:smooth_app/themes/smooth_theme.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class SmoothProductCarousel extends StatefulWidget {
@@ -218,55 +218,54 @@ class SearchCard extends StatelessWidget {
 
   final double height;
 
-  static const double OPACITY = 0.85;
-
   @override
   Widget build(BuildContext context) {
     final AppLocalizations localizations = AppLocalizations.of(context);
     final ThemeData themeData = Theme.of(context);
+    final Color? brandColor =
+        themeData.extension<SmoothThemeExtension>()?.brandColor;
     final bool isDarkmode = themeData.brightness == Brightness.dark;
 
     return SmoothProductBaseCard(
-      backgroundColorOpacity: OPACITY,
-      margin: const EdgeInsets.symmetric(
-        vertical: VERY_SMALL_SPACE,
-      ),
+      elevation: 5.0,
+      elevationColor: isDarkmode
+          ? Colors.white.withOpacity(0.3)
+          : Colors.black.withOpacity(0.3),
+      margin: const EdgeInsets.only(top: VERY_SMALL_SPACE),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          SvgPicture.asset(
-            Theme.of(context).brightness == Brightness.light
-                ? 'assets/app/release_icon_light_transparent_no_border.svg'
-                : 'assets/app/release_icon_dark_transparent_no_border.svg',
-            width: height * 0.2,
-            height: height * 0.2,
-            package: AppHelper.APP_PACKAGE,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: MEDIUM_SPACE),
-            child: AutoSizeText(
-              localizations.welcomeToOpenFoodFacts,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 26.0,
-                fontWeight: FontWeight.bold,
-                height: 1.00,
-              ),
-              maxLines: 1,
-            ),
-          ),
-          const Expanded(child: _SearchCardTagLine()),
+          LayoutBuilder(builder: (_, BoxConstraints constraints) {
+            return SvgPicture.asset(
+              Theme.of(context).brightness == Brightness.light
+                  ? 'assets/app/off_logo_with_text_black.svg'
+                  : 'assets/app/off_logo_with_text_white.svg',
+              width: constraints.maxWidth * 0.8,
+              package: AppHelper.APP_PACKAGE,
+              semanticsLabel: localizations.welcomeToOpenFoodFacts,
+            );
+          }),
+          const SizedBox(height: VERY_LARGE_SPACE),
           SearchField(
             onFocus: () => _openSearchPage(context),
             readOnly: true,
             showClearButton: false,
-            backgroundColor: isDarkmode
-                ? Colors.white10
-                : const Color.fromARGB(255, 240, 240, 240).withOpacity(OPACITY),
-            foregroundColor:
-                themeData.colorScheme.onSurface.withOpacity(OPACITY),
+            backgroundColor: isDarkmode ? Colors.white10 : Colors.white,
+            borderColor: brandColor,
+            hintText: localizations.homepage_search_field_hint,
+            prefix: Padding(
+              padding: const EdgeInsetsDirectional.only(start: 25.0, end: 10.0),
+              child: Icon(
+                Icons.search,
+                color: brandColor,
+              ),
+            ),
           ),
+          const SizedBox(height: VERY_LARGE_SPACE * 2),
+          const Expanded(child: _SearchCardTagLine()),
+          const SizedBox(height: MEDIUM_SPACE),
+          const _SwipeBetweenPages(),
         ],
       ),
     );
@@ -309,7 +308,6 @@ class _SearchCardTagLineState extends State<_SearchCardTagLine> {
 
   @override
   Widget build(BuildContext context) {
-    final UserPreferences preferences = context.watch<UserPreferences>();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: VERY_SMALL_SPACE),
       child: DefaultTextStyle.merge(
@@ -320,31 +318,29 @@ class _SearchCardTagLineState extends State<_SearchCardTagLine> {
         textAlign: TextAlign.center,
         overflow: TextOverflow.ellipsis,
         maxLines: 5,
-        child: preferences.isFirstScan
-            ? const _SearchCardTagLineDefaultText()
-            : FutureBuilder<Map<String, dynamic>>(
-                future: _initTagLineData,
-                builder: (BuildContext context,
-                    AsyncSnapshot<Map<String, dynamic>> data) {
-                  if (data.connectionState != ConnectionState.done ||
-                      data.data == null ||
-                      !data.hasData) {
-                    return const _SearchCardTagLineDefaultText();
-                  }
+        child: FutureBuilder<Map<String, dynamic>>(
+          future: _initTagLineData,
+          builder:
+              (BuildContext context, AsyncSnapshot<Map<String, dynamic>> data) {
+            if (data.connectionState != ConnectionState.done ||
+                data.data == null ||
+                !data.hasData) {
+              return const _SearchCardTagLineDefaultText();
+            }
 
-                  if (data.data![_SearchCardTagLine.DEPRECATED_KEY] as bool) {
-                    return const _SearchCardTagLineDeprecatedAppText();
-                  }
+            if (data.data![_SearchCardTagLine.DEPRECATED_KEY] as bool) {
+              return const _SearchCardTagLineDeprecatedAppText();
+            }
 
-                  if (data.data![_SearchCardTagLine.TAG_LINE_KEY] != null) {
-                    return _SearchCardTagLineText(
-                      tagLine: data.data![_SearchCardTagLine.TAG_LINE_KEY]
-                          as TagLineItem,
-                    );
-                  }
-                  return const _SearchCardTagLineDefaultText();
-                },
-              ),
+            if (data.data![_SearchCardTagLine.TAG_LINE_KEY] != null) {
+              return _SearchCardTagLineText(
+                tagLine:
+                    data.data![_SearchCardTagLine.TAG_LINE_KEY] as TagLineItem,
+              );
+            }
+            return const _SearchCardTagLineDefaultText();
+          },
+        ),
       ),
     );
   }
@@ -391,7 +387,7 @@ class _SearchCardTagLineDefaultText extends StatelessWidget {
           horizontal: 10.0,
         ),
         child: AutoSizeText(
-          localizations.searchPanelHeader,
+          'Blabla',
         ),
       ),
     );
@@ -481,25 +477,119 @@ class _SearchCardTagLineText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: ANGULAR_BORDER_RADIUS,
-      onTap: tagLine.hasLink
-          ? () async {
-              await launchUrlString(
-                tagLine.url,
-                // forms.gle links are not handled by the WebView
-                mode: LaunchMode.externalApplication,
-              );
-            }
-          : null,
-      child: Center(
-        child: AutoSizeText(
-          tagLine.message,
+    final AppLocalizations localizations = AppLocalizations.of(context);
+    final Color primaryColor = Theme.of(context).colorScheme.primary;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          localizations.homepage_latest_news_title,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
+            fontSize: 16.5,
+            color: primaryColor,
+            decoration: TextDecoration.underline,
           ),
         ),
-      ),
+        const SizedBox(height: SMALL_SPACE),
+        InkWell(
+          borderRadius: ANGULAR_BORDER_RADIUS,
+          onTap: tagLine.hasLink
+              ? () async {
+                  await launchUrlString(
+                    tagLine.url,
+                    // forms.gle links are not handled by the WebView
+                    mode: LaunchMode.externalApplication,
+                  );
+                }
+              : null,
+          child: Container(
+            padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: MEDIUM_SPACE,
+              vertical: LARGE_SPACE,
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xFFD8D8D8)),
+              borderRadius: ANGULAR_BORDER_RADIUS,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Expanded(
+                  child: Center(
+                    child: AutoSizeText(
+                      tagLine.message,
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        color: primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: SMALL_SPACE),
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 8.0),
+                  child: Icon(
+                    Icons.arrow_right_alt,
+                    color: primaryColor,
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
     );
+  }
+}
+
+class _SwipeBetweenPages extends StatelessWidget {
+  const _SwipeBetweenPages({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    if (context.watch<ContinuousScanModel>().getBarcodes().isEmpty) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Icon(Icons.info),
+          const SizedBox(width: SMALL_SPACE),
+          Expanded(
+            child: Text(
+              'Start by scanning a barcode with the camera',
+              style: TextStyle(fontStyle: FontStyle.italic),
+              textAlign: TextAlign.start,
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              'Swipe this card to find your scanned products',
+              style: TextStyle(fontStyle: FontStyle.italic),
+              textAlign: TextAlign.end,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsetsDirectional.only(
+              start: SMALL_SPACE,
+              top: 1.5,
+            ),
+            child: SvgPicture.asset(
+              'assets/icons/double_chevron.svg',
+              colorFilter: ColorFilter.mode(
+                IconTheme.of(context).color ?? Colors.white,
+                BlendMode.srcIn,
+              ),
+              height: DefaultTextStyle.of(context).style.fontSize! - 5,
+            ),
+          ),
+        ],
+      );
+    }
   }
 }

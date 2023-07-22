@@ -40,6 +40,9 @@ class SmoothTheme {
     return ThemeData(
       primaryColor: const Color(0xFF341100),
       colorScheme: myColorScheme,
+      extensions: <ThemeExtension<dynamic>>[
+        OFFThemeExtension(),
+      ],
       canvasColor: themeProvider.currentTheme == THEME_AMOLED
           ? myColorScheme.background
           : null,
@@ -216,4 +219,41 @@ class SmoothTheme {
 
     return hslDark.toColor();
   }
+}
+
+class SmoothThemeExtension extends ThemeExtension<SmoothThemeExtension> {
+  const SmoothThemeExtension({
+    required this.brandColor,
+  });
+
+  final Color brandColor;
+
+  @override
+  ThemeExtension<SmoothThemeExtension> copyWith({
+    Color? brandColor,
+  }) =>
+      SmoothThemeExtension(
+        brandColor: brandColor ?? this.brandColor,
+      );
+
+  @override
+  ThemeExtension<SmoothThemeExtension> lerp(
+    ThemeExtension<SmoothThemeExtension>? other,
+    double t,
+  ) {
+    if (other is! SmoothThemeExtension) {
+      return this;
+    }
+
+    return SmoothThemeExtension(
+      brandColor: Color.lerp(brandColor, other.brandColor, t) ?? brandColor,
+    );
+  }
+}
+
+class OFFThemeExtension extends SmoothThemeExtension {
+  OFFThemeExtension()
+      : super(
+          brandColor: const Color(0xFFFF8714),
+        );
 }

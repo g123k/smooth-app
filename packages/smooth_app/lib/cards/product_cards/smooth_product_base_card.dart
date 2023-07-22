@@ -14,12 +14,16 @@ class SmoothProductBaseCard extends StatelessWidget {
     required this.child,
     this.backgroundColorOpacity,
     this.margin,
+    this.elevation,
+    this.elevationColor,
     super.key,
   });
 
   final Widget child;
   final double? backgroundColorOpacity;
   final EdgeInsets? margin;
+  final double? elevation;
+  final Color? elevationColor;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +42,8 @@ class SmoothProductBaseCard extends StatelessWidget {
                 ? Colors.white.withOpacity(backgroundColorOpacity ?? 1.0)
                 : Colors.black.withOpacity(backgroundColorOpacity ?? 1.0),
             margin: margin,
+            elevation: elevation,
+            elevationColor: elevationColor,
             padding: padding,
             child: FittedBox(
               fit: BoxFit.scaleDown,

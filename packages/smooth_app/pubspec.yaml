@@ -170,4 +170,5 @@ flutter:
     - assets/packagings/
     - assets/preferences/
     - assets/product/
+    - assets/icons/double_chevron.svg
     - assets/icons/visor_icon.svg

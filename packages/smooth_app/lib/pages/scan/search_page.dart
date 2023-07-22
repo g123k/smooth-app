@@ -149,7 +149,10 @@ class SearchField extends StatefulWidget {
     this.onFocus,
     this.backgroundColor,
     this.foregroundColor,
+    this.borderColor,
+    this.hintText,
     this.focusNode,
+    this.prefix,
   });
 
   final bool autofocus;
@@ -160,7 +163,11 @@ class SearchField extends StatefulWidget {
   final void Function()? onFocus;
   final Color? backgroundColor;
   final Color? foregroundColor;
+  final Color? borderColor;
 
+  final Widget? prefix;
+
+  final String? hintText;
   final FocusNode? focusNode;
 
   @override
@@ -227,39 +234,49 @@ class _SearchFieldState extends State<SearchField> {
         borderSide: BorderSide.none,
       ),
       contentPadding: const EdgeInsets.symmetric(
-        horizontal: 25.0,
+        horizontal: 20.0,
         vertical: 17.0,
       ),
-      hintText: localizations.search,
+      hintText: widget.hintText ?? localizations.search,
+      hintMaxLines: 1,
+      prefixIcon: widget.prefix,
       suffixIcon:
           widget.showClearButton ? _buildClearButton(localizations) : null,
     );
 
-    const TextStyle textStyle = TextStyle(fontSize: 18.0);
+    const TextStyle textStyle = TextStyle(fontSize: 17.0);
 
     if (widget.readOnly) {
-      return InkWell(
-        borderRadius: CIRCULAR_BORDER_RADIUS,
-        splashColor: Theme.of(context).primaryColor,
-        onTap: () {
-          widget.onFocus?.call();
-        },
-        child: Ink(
-          decoration: BoxDecoration(
-            borderRadius: CIRCULAR_BORDER_RADIUS,
-            color: Theme.of(context).brightness == Brightness.light
-                ? Colors.white
-                : null,
-          ),
-          child: InputDecorator(
-            decoration: inputDecoration,
-            child: Text(
-              inputDecoration.hintText!,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium!
-                  .copyWith(color: Theme.of(context).hintColor)
-                  .merge(textStyle),
+      return Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: CIRCULAR_BORDER_RADIUS,
+          splashColor: Theme.of(context).primaryColor,
+          onTap: () {
+            widget.onFocus?.call();
+          },
+          child: Ink(
+            decoration: BoxDecoration(
+              borderRadius: CIRCULAR_BORDER_RADIUS,
+              border: widget.borderColor != null
+                  ? Border.all(color: widget.borderColor!)
+                  : null,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.white
+                  : null,
+            ),
+            child: InputDecorator(
+              decoration: inputDecoration,
+              child: Text(
+                inputDecoration.hintText!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium!
+                    .copyWith(color: Theme.of(context).hintColor)
+                    .merge(textStyle),
+              ),
             ),
           ),
         ),

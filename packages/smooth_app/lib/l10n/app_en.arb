@@ -120,7 +120,17 @@
     },
     "@Introduction screen": {},
     "welcomeToOpenFoodFacts": "Welcome to Open Food Facts",
-    "@welcomeToOpenFoodFacts": {},
+    "@welcomeToOpenFoodFacts": {
+        "description": "Alternative text used on the OFF logo"
+    },
+    "homepage_search_field_hint": "Search a product or a barcode",
+    "@homepage_search_field_hint": {
+        "description": "Hint visible on the search field on the homepage"
+    },
+    "homepage_latest_news_title": "Our latest news:",
+    "@homepage_latest_news_title": {
+        "description": "Title before a news in the homepage"
+    },
     "whatIsOff": "Open Food Facts is a global non-profit powered by local communities.",
     "@whatIsOff": {
         "description": "Description of Open Food Facts organization."
@@ -670,8 +680,6 @@
     "no_product_found": "No product found",
     "@no_product_found": {},
     "not_found": "not found:",
-    "searchPanelHeader": "Search or scan your first product",
-    "@Product query status": {},
     "refreshing_product": "Refreshing product",
     "@refreshing_product": {
         "description": "Confirmation, that the product data of a cached product is queried again"

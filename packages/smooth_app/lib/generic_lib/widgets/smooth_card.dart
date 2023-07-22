@@ -17,9 +17,10 @@ class SmoothCard extends StatelessWidget {
       vertical: VERY_SMALL_SPACE,
     ),
     this.padding = const EdgeInsets.all(5.0),
-    this.elevation = 8,
+    double? elevation,
+    this.elevationColor,
     this.borderRadius,
-  });
+  }) : elevation = elevation ?? 8;
 
   const SmoothCard.angular({
     required this.child,
@@ -30,6 +31,7 @@ class SmoothCard extends StatelessWidget {
     ),
     this.padding = const EdgeInsets.all(5.0),
     this.elevation = 8,
+    this.elevationColor,
   }) : borderRadius = ANGULAR_BORDER_RADIUS;
 
   const SmoothCard.flat({
@@ -43,6 +45,7 @@ class SmoothCard extends StatelessWidget {
     ),
     this.padding = const EdgeInsets.all(5.0),
     this.elevation = 0,
+    this.elevationColor,
     this.borderRadius,
   });
 
@@ -52,12 +55,13 @@ class SmoothCard extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final BorderRadiusGeometry? borderRadius;
   final double elevation;
+  final Color? elevationColor;
 
   @override
   Widget build(BuildContext context) {
     final Widget result = Material(
       elevation: elevation,
-      shadowColor: const Color.fromARGB(25, 0, 0, 0),
+      shadowColor: elevationColor ?? const Color.fromARGB(25, 0, 0, 0),
       borderRadius: borderRadius ?? ROUNDED_BORDER_RADIUS,
       color: color ??
           (Theme.of(context).brightness == Brightness.light
