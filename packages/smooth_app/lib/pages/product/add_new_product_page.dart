@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +26,7 @@ import 'package:smooth_app/pages/product/product_field_editor.dart';
 import 'package:smooth_app/pages/product/product_image_swipeable_view.dart';
 import 'package:smooth_app/pages/product/simple_input_page_helpers.dart';
 import 'package:smooth_app/query/product_query.dart';
+import 'package:smooth_app/widgets/smooth_header.dart';
 import 'package:smooth_app/widgets/smooth_scaffold.dart';
 
 /// "Create a product we couldn't find on the server" page.
@@ -218,25 +219,20 @@ class _AddNewProductPageState extends State<AddNewProductPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: <Color>[
-                      _colorScheme.inversePrimary,
-                      _colorScheme.secondary
-                    ],
+              SmoothHeader(
+                title: 'Prenons quelques photos',
+                currentStep: 1,
+                maxSteps: 5,
+                icon: PreferredSize(
+                  preferredSize: const Size(92.0, 114.0),
+                  child: SvgPicture.asset(
+                    'assets/misc/dark-orange.svg',
+                    width: 92.0,
+                    height: 114.0,
                   ),
                 ),
-                child: FAProgressBar(
-                  animatedDuration: SmoothAnimationsDuration.short,
-                  backgroundColor: _colorScheme.secondary,
-                  size: 8,
-                  currentValue: _progress,
-                  maxValue: 1,
-                  progressColor: _colorScheme.inversePrimary,
-                ),
+                iconOffset: const FractionalOffset(0.3, 0.4),
               ),
-              _backButton(),
               Expanded(
                 child: PageView(
                   controller: _pageController,
