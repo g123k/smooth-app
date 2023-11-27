@@ -647,6 +647,9 @@
         "description": "Button at the end of new product page, that takes you to completed product"
     },
     "hey_incomplete_product_message": "Tap to answer 3 questions NOW to compute Nutri-Score, Eco-Score & Ultra-processing (NOVA)!",
+    "hey_incomplete_product_category": "Tap to complete this product by adding the category",
+    "hey_incomplete_product_nutritional_data": "Tap to complete this product by adding nutritional facts",
+    "hey_incomplete_product_ingredients": "Tap to complete this product by adding add ingredients",
     "nutritional_facts_photo_uploaded": "Nutrition facts photo uploaded",
     "@nutritional_facts_photo_uploaded": {},
     "recycling_photo_button_label": "Recycling photo",

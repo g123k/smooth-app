@@ -40,6 +40,12 @@ class SmoothTheme {
     return ThemeData(
       useMaterial3: false,
       primaryColor: DARK_BROWN_COLOR,
+      extensions: <ThemeExtension<dynamic>>[
+        switch (brightness) {
+          Brightness.light => const SmoothColors._light(),
+          _ => const SmoothColors._dark(),
+        }
+      ],
       colorScheme: myColorScheme,
       canvasColor: themeProvider.currentTheme == THEME_AMOLED
           ? myColorScheme.background
@@ -217,4 +223,120 @@ class SmoothTheme {
 
     return hslDark.toColor();
   }
+}
+
+// ignore_for_file: avoid_field_initializers_in_const_classes
+class SmoothColors extends ThemeExtension<SmoothColors> {
+  SmoothColors._({
+    required this.text,
+    required this.primaryBackground,
+    required this.secondaryBackground,
+    required this.primaryButton,
+    required this.secondaryButton,
+    required this.progress,
+    required this.selection,
+  });
+
+  const SmoothColors._light()
+      : text = Colors.black,
+        primaryBackground = Colors.white,
+        secondaryBackground = _LATTE_COLOR,
+        primaryButton = _CHOCOLATE_COLOR,
+        secondaryButton = _CAPPUCCINO_COLOR,
+        progress = _CORTADO_COLOR,
+        selection = _MOCHA_COLOR;
+
+  const SmoothColors._dark()
+      : text = Colors.white,
+        primaryBackground = _RISTRETO_COLOR,
+        secondaryBackground = _CORTADO_COLOR,
+        primaryButton = Colors.white,
+        secondaryButton = _MACCHIATO_COLOR,
+        progress = Colors.white,
+        selection = _CAPPUCCINO_COLOR;
+
+  final Color text;
+  final Color primaryBackground;
+  final Color secondaryBackground;
+  final Color primaryButton;
+  final Color secondaryButton;
+  final Color selection;
+  final Color progress;
+
+  /// Palette of colors from Figma
+  /// /!\ Don't use them directly
+  static const Color _LATTE_COLOR = Color(0xFFF6F3F0);
+  static const Color _CHOCOLATE_COLOR = Color(0xFF341100);
+  static const Color _CAPPUCCINO_COLOR = Color(0xFFEDE0DB);
+  static const Color _MOCHA_COLOR = Color(0xFF85746C);
+  static const Color _MACCHIATO_COLOR = Color(0xFFA08D84);
+  static const Color _RISTRETO_COLOR = Color(0xFF201A17);
+  static const Color _CORTADO_COLOR = Color(0xFF52443D);
+
+  @override
+  ThemeExtension<SmoothColors> copyWith({
+    final Color? text,
+    final Color? primaryBackground,
+    final Color? secondaryBackground,
+    final Color? primaryButton,
+    final Color? secondaryButton,
+    final Color? selection,
+    final Color? progress,
+  }) =>
+      SmoothColors._(
+        text: text ?? this.text,
+        primaryBackground: primaryBackground ?? this.primaryBackground,
+        secondaryBackground: secondaryBackground ?? this.secondaryBackground,
+        primaryButton: primaryButton ?? this.primaryButton,
+        secondaryButton: secondaryButton ?? this.secondaryButton,
+        selection: selection ?? this.selection,
+        progress: progress ?? this.progress,
+      );
+
+  @override
+  ThemeExtension<SmoothColors> lerp(
+    covariant ThemeExtension<SmoothColors>? other,
+    double t,
+  ) {
+    if (other is! SmoothColors) {
+      return this;
+    }
+
+    return SmoothColors._(
+      text: Color.lerp(text, other.text, t)!,
+      primaryBackground: Color.lerp(
+        primaryBackground,
+        other.primaryBackground,
+        t,
+      )!,
+      secondaryBackground: Color.lerp(
+        secondaryBackground,
+        other.secondaryBackground,
+        t,
+      )!,
+      primaryButton: Color.lerp(
+        primaryButton,
+        other.primaryButton,
+        t,
+      )!,
+      secondaryButton: Color.lerp(
+        secondaryButton,
+        other.secondaryButton,
+        t,
+      )!,
+      selection: Color.lerp(
+        selection,
+        other.selection,
+        t,
+      )!,
+      progress: Color.lerp(
+        progress,
+        other.progress,
+        t,
+      )!,
+    );
+  }
+
+  static SmoothColors of(BuildContext context) =>
+      Theme.of(context).extension<SmoothColors>()!;
 }

@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_app/generic_lib/design_constants.dart';
 import 'package:smooth_app/generic_lib/duration_constants.dart';
+import 'package:smooth_app/themes/smooth_theme.dart';
 
 /// A Widget to display on top of the screen that shows:
 /// - A progression
@@ -145,17 +146,20 @@ class _AnimatedHeaderProgressState extends State<_AnimatedHeaderProgress>
     final double end = to ?? widget.currentStep.toDouble();
 
     _controller.reset();
-    _animation = Tween<double>(begin: start, end: end)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _animation = Tween<double>(begin: start, end: end).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
     _controller.forward();
   }
 
   @override
   Widget build(BuildContext context) {
+    final SmoothColors colors = SmoothColors.of(context);
+
     return CustomPaint(
       foregroundPainter: _ProgressPainter(
-        backgroundColor: const Color(0xFFF6F3F0),
-        progressColor: const Color(0xFF52443D),
+        backgroundColor: colors.secondaryBackground,
+        progressColor: colors.progress,
         progress: _animation?.value ?? 0.0,
         steps: widget.maxSteps,
       ),
@@ -189,15 +193,30 @@ class _ProgressPainter extends CustomPainter {
     final double stepWidth = size.width / steps;
 
     // Background
-    _paint.color = canvas.drawRRect(
-        RRect.fromLTRBR(
-          0,
-          0,
-          size.width,
-          size.height,
-          const Radius.circular(8.0),
-        ),
-        _paint);
+    _paint.color = backgroundColor;
+    canvas.drawRRect(
+      RRect.fromLTRBR(
+        stepWidth * progress,
+        0,
+        size.width,
+        size.height,
+        ANGULAR_RADIUS,
+      ),
+      _paint,
+    );
+
+    // Foreground
+    _paint.color = progressColor;
+    canvas.drawRRect(
+      RRect.fromLTRBR(
+        0,
+        0,
+        stepWidth * progress,
+        size.height,
+        ANGULAR_RADIUS,
+      ),
+      _paint,
+    );
   }
 
   @override
