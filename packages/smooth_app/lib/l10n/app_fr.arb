@@ -2528,5 +2528,6 @@
     "link_cant_be_opened": "Ce lien ne peut pas être ouvert sur votre appareil. Veuillez vérifier qu'un navigateur est installé.",
     "@link_cant_be_opened": {
         "description": "An error may happen if the device doesn't have a browser installed."
-    }
+    },
+
 }

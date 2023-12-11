@@ -31,7 +31,10 @@ class SmoothHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: _computeHeight(MediaQuery.of(context)),
+      height: _computeHeight(
+        MediaQuery.of(context),
+        DefaultTextStyle.of(context).style,
+      ),
       child: ClipRRect(
         borderRadius: const BorderRadiusDirectional.vertical(
           bottom: Radius.circular(30.0),
@@ -44,26 +47,34 @@ class SmoothHeader extends StatelessWidget {
                 _icon(),
                 Positioned.fill(
                   child: Padding(
-                    padding: const EdgeInsetsDirectional.only(
-                      start: LARGE_SPACE,
-                      end: LARGE_SPACE,
-                      top: MEDIUM_SPACE,
+                    padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: LARGE_SPACE,
+                      vertical: MEDIUM_SPACE,
                     ),
                     child: Column(
                       children: <Widget>[
-                        _AnimatedHeaderProgress(
-                          currentStep: currentStep,
-                          maxSteps: maxSteps,
+                        SizedBox(
+                          width: double.infinity,
+                          height: 10.0,
+                          child: _AnimatedHeaderProgress(
+                            currentStep: currentStep,
+                            maxSteps: maxSteps,
+                          ),
                         ),
                         const SizedBox(height: VERY_LARGE_SPACE),
-                        AutoSizeText(
-                          title,
-                          maxLines: 2,
-                          maxFontSize: 24.0,
-                          style: const TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
+                        Padding(
+                          padding: EdgeInsetsDirectional.only(
+                            end: icon.preferredSize.width * 0.9,
+                          ),
+                          child: AutoSizeText(
+                            title,
+                            maxLines: 2,
+                            maxFontSize: 24.0,
+                            style: const TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
                           ),
                         ),
                       ],
@@ -89,13 +100,14 @@ class SmoothHeader extends StatelessWidget {
     );
   }
 
-  /// Status bar + progress bar + text on 2 lines + paddings
-  double _computeHeight(MediaQueryData mediaQuery) {
+  double _computeHeight(MediaQueryData mediaQuery, TextStyle? textStyle) {
+    /// Status bar + progress bar + text on 2 lines + paddings
     return mediaQuery.viewPadding.top +
-        MEDIUM_SPACE +
+        (MEDIUM_SPACE * 2) +
         _AnimatedHeaderProgress.HEIGHT +
         VERY_LARGE_SPACE +
         (mediaQuery.textScaleFactor * 24.0) * 2 +
+        (textStyle?.height ?? 1.0) +
         LARGE_SPACE;
   }
 }
@@ -139,6 +151,10 @@ class _AnimatedHeaderProgressState extends State<_AnimatedHeaderProgress>
   @override
   void didUpdateWidget(_AnimatedHeaderProgress oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.currentStep != widget.currentStep) {
+      _updateAnimation();
+    }
   }
 
   void _updateAnimation({double? to}) {
