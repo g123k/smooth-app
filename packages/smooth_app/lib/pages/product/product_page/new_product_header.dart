@@ -7,6 +7,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_app/generic_lib/design_constants.dart';
+import 'package:smooth_app/generic_lib/duration_constants.dart';
 import 'package:smooth_app/helpers/num_utils.dart';
 import 'package:smooth_app/helpers/product_cards_helper.dart';
 import 'package:smooth_app/helpers/provider_helper.dart';
@@ -16,6 +17,7 @@ import 'package:smooth_app/pages/product/product_page/new_product_page.dart';
 import 'package:smooth_app/resources/app_icons.dart' as icons;
 import 'package:smooth_app/themes/constant_icons.dart';
 import 'package:smooth_app/themes/smooth_theme_colors.dart';
+import 'package:smooth_app/widgets/smooth_floating_message.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class ProductHeader extends StatefulWidget {
@@ -266,9 +268,13 @@ class _ProductCompatibilityScore extends StatelessWidget {
                 border: Border.all(color: Colors.white),
               ),
               child: InkWell(
-                onTap: () => AppNavigator.of(context).push(
-                  AppRoutes.PREFERENCES(PreferencePageType.FOOD),
-                ),
+                onTap: () {
+                  SmoothFloatingMessage(message: 'Coucou').show(
+                    context,
+                    duration: SnackBarDuration.medium,
+                    alignment: Alignment.bottomCenter,
+                  );
+                },
                 borderRadius: ROUNDED_BORDER_RADIUS,
                 child: ClipRRect(
                   borderRadius: ROUNDED_BORDER_RADIUS,

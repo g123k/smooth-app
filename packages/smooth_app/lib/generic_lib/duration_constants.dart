@@ -13,5 +13,5 @@ class SnackBarDuration {
   static const Duration brief = Duration(seconds: 1);
   static const Duration short = Duration(seconds: 2);
   static const Duration medium = Duration(seconds: 3);
-  static const Duration long = Duration(seconds: 5);
+      static const Duration long = Duration(seconds: 5);
 }
