@@ -54,6 +54,12 @@ class SmoothTheme {
       primaryColor: DARK_BROWN_COLOR,
       extensions: <ThemeExtension<dynamic>>[smoothExtension],
       colorScheme: myColorScheme,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: <TargetPlatform, PageTransitionsBuilder>{
+          // Set the predictive back transitions for Android.
+          TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+        },
+      ),
       canvasColor: themeProvider.currentTheme == THEME_AMOLED
           ? myColorScheme.surface
           : null,

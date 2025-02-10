@@ -22,6 +22,7 @@
             android:hasFragileUserData="true"
             android:allowBackup="true"
             android:fullBackupContent="@xml/backup_scheme"
+            android:enableOnBackInvokedCallback="true"
             tools:targetApi="q">
         <activity
                 android:name=".MainActivity"
