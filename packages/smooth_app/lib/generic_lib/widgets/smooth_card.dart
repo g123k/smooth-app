@@ -227,7 +227,7 @@ class SmoothCardWithRoundedHeaderTop extends StatelessWidget {
   final BorderRadius? borderRadius;
   final Widget? banner;
 
-  static const double _DEFAULT_LEADING_ICON_SIZE = 17.0;
+  static const double DEFAULT_LEADING_ICON_SIZE = 17.0;
 
   @override
   Widget build(BuildContext context) {
@@ -267,7 +267,7 @@ class SmoothCardWithRoundedHeaderTop extends StatelessWidget {
                     IconTheme(
                       data: IconThemeData(
                         color: titleBackgroundColor,
-                        size: leadingIconSize ?? _DEFAULT_LEADING_ICON_SIZE,
+                        size: leadingIconSize ?? DEFAULT_LEADING_ICON_SIZE,
                       ),
                       child: DecoratedBox(
                         decoration: const BoxDecoration(

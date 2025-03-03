@@ -4141,17 +4141,26 @@
   "@app_review_feedback_modal_later": {
     "description": "Ask me later button"
   },
-  "nutrition_facts_extract_new": "NEW: You can automatically extract the nutrients from the picture!",
-  "@nutrition_facts_extract_new": {
+  "nutrition_facts_extract_robotoff": "You can automatically extract the nutrients from the picture!",
+  "@nutrition_facts_extract_robotoff": {
       "description": "Message to indicate that user can now extract of nutrients from a picture"
+  },
+  "new_feature": "NEW: {feature}",
+  "@new_feature": {
+      "description": "Keyword to indicate that a feature is new",
+        "placeholders": {
+            "feature": {
+                "type": "String"
+            }
+        }
   },
   "nutrition_facts_extract_button_text": "Extract now",
   "@nutrition_facts_extract_button_text": {
       "description": "Button to extraction of nutrients from a picture"
   },
-  "nutrition_facts_extract_succesful": "Extraction succesful",
-  "@nutrition_facts_extract_succesful": {
-      "description": "Message to indicate that the extraction of nutrients from a picture was succesful"
+  "nutrition_facts_extract_successful": "Extraction successful",
+  "@nutrition_facts_extract_successful": {
+      "description": "Message to indicate that the extraction of nutrients from a picture was successful"
   },
   "nutrition_facts_extract_failed": "Failed to extract nutrients from picture",
   "@nutrition_facts_extract_failed": {

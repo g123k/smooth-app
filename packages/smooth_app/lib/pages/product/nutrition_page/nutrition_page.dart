@@ -9,6 +9,7 @@ import 'package:smooth_app/background/background_task_details.dart';
 import 'package:smooth_app/data_models/up_to_date_mixin.dart';
 import 'package:smooth_app/database/local_database.dart';
 import 'package:smooth_app/generic_lib/design_constants.dart';
+import 'package:smooth_app/generic_lib/widgets/smooth_card.dart';
 import 'package:smooth_app/generic_lib/widgets/smooth_sliver_card.dart';
 import 'package:smooth_app/generic_lib/widgets/smooth_snackbar.dart';
 import 'package:smooth_app/helpers/analytics_helper.dart';
@@ -434,78 +435,7 @@ class _NutritionPageBodyState extends State<_NutritionPageBody> {
       ),
       sliver: SliverCardWithRoundedHeader(
         banner: nutritionContainer.robotoffNutrientExtraction == null
-            ? Consumer<NutritionContainerHelper>(
-                builder: (
-                  BuildContext context,
-                  NutritionContainerHelper nutritionContainer,
-                  _,
-                ) {
-                  final bool loading =
-                      nutritionContainer.loadingRobotoffExtraction;
-
-                  return Padding(
-                    padding: const EdgeInsetsDirectional.all(MEDIUM_SPACE),
-                    child: Row(
-                      children: <Widget>[
-                        const ExcludeSemantics(
-                          child: icons.Sparkles(
-                            size: 18.0,
-                          ),
-                        ),
-                        const SizedBox(width: MEDIUM_SPACE),
-                        Expanded(
-                          child: Text(
-                            appLocalizations.nutrition_facts_extract_new,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: nutritionContainer
-                                          .robotoffNutrientExtraction !=
-                                      null ||
-                                  loading
-                              ? null
-                              : () async {
-                                  if (widget.product.barcode == null) {
-                                    return;
-                                  }
-
-                                  final bool success = await nutritionContainer
-                                      .fetchRobotoffExtraction(widget.product);
-
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      success
-                                          ? SmoothFloatingSnackbar.positive(
-                                              context: context,
-                                              text: appLocalizations
-                                                  .nutrition_facts_extract_succesful,
-                                            )
-                                          : SmoothFloatingSnackbar.error(
-                                              context: context,
-                                              text: appLocalizations
-                                                  .nutrition_facts_extract_failed,
-                                            ),
-                                    );
-                                  }
-                                },
-                          child: loading
-                              ? const SizedBox.square(
-                                  dimension: 20.0,
-                                  child: CircularProgressIndicator(),
-                                )
-                              : Text(
-                                  appLocalizations
-                                      .nutrition_facts_extract_button_text,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              )
+            ? const NutritionFactsAutoExtractBanner()
             : null,
         title: appLocalizations.edit_product_form_item_nutrition_facts_title,
         leading: const NutritionFacts(),
@@ -514,7 +444,9 @@ class _NutritionPageBodyState extends State<_NutritionPageBody> {
           children: <Widget>[
             NutritionAddNutrientHeaderButton(
               onNutrientSelected: (final OrderedNutrient nutrient) {
-                setState(() => _nutrientToHighlight = nutrient);
+                setState(
+                  () => _nutrientToHighlight = nutrient,
+                );
               },
             ),
             const NutritionFactsEditorExplanation(),
@@ -581,6 +513,98 @@ class _NutritionPageBodyState extends State<_NutritionPageBody> {
     _focusNodes.clear();
 
     super.dispose();
+  }
+}
+
+class NutritionFactsAutoExtractBanner extends StatelessWidget {
+  const NutritionFactsAutoExtractBanner({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<NutritionContainerHelper>(
+      builder: (
+        BuildContext context,
+        NutritionContainerHelper nutritionContainer,
+        _,
+      ) {
+        final Product product = context.watch<Product>();
+
+        final AppLocalizations appLocalizations = AppLocalizations.of(context);
+        final bool loading = nutritionContainer.loadingRobotoffExtraction;
+
+        return Padding(
+          padding: const EdgeInsetsDirectional.only(
+            start: MEDIUM_SPACE,
+          ),
+          child: Row(
+            children: <Widget>[
+              const ExcludeSemantics(
+                child: DecoratedBox(
+                  decoration: ShapeDecoration(
+                    shape: CircleBorder(),
+                    color: Colors.white,
+                  ),
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.all(6.0),
+                    child: icons.Sparkles(
+                      size: SmoothCardWithRoundedHeaderTop
+                          .DEFAULT_LEADING_ICON_SIZE,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: MEDIUM_SPACE),
+              Expanded(
+                child: Text(
+                  appLocalizations.new_feature(
+                    appLocalizations.nutrition_facts_extract_robotoff,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed:
+                    nutritionContainer.robotoffNutrientExtraction != null ||
+                            loading
+                        ? null
+                        : () async {
+                            final bool success = await nutritionContainer
+                                .fetchRobotoffExtraction(product);
+
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                success
+                                    ? SmoothFloatingSnackbar.positive(
+                                        context: context,
+                                        text: appLocalizations
+                                            .nutrition_facts_extract_successful,
+                                      )
+                                    : SmoothFloatingSnackbar.error(
+                                        context: context,
+                                        text: appLocalizations
+                                            .nutrition_facts_extract_failed,
+                                      ),
+                              );
+                            }
+                          },
+                child: loading
+                    ? const SizedBox.square(
+                        dimension: 20.0,
+                        child: CircularProgressIndicator(),
+                      )
+                    : Text(
+                        appLocalizations.nutrition_facts_extract_button_text,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 

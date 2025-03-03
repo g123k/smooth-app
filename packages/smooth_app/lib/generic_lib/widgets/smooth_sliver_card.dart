@@ -76,20 +76,21 @@ class _SliverCardWithRoundedHeaderState
 
     if (_height == null) {
       return SliverToBoxAdapter(
-          child: Column(
-        children: <Widget>[
-          if (widget.banner != null)
+        child: Column(
+          children: <Widget>[
+            if (widget.banner != null)
+              MeasureSize(
+                onChange: (Size size) =>
+                    setState(() => _bannerHeight = size.height),
+                child: widget.banner!,
+              ),
             MeasureSize(
-              onChange: (Size size) =>
-                  setState(() => _bannerHeight = size.height),
-              child: widget.banner!,
+              onChange: (Size size) => setState(() => _height = size.height),
+              child: Opacity(opacity: 0.0, child: child),
             ),
-          MeasureSize(
-            onChange: (Size size) => setState(() => _height = size.height),
-            child: Opacity(opacity: 0.0, child: child),
-          ),
-        ],
-      ));
+          ],
+        ),
+      );
     }
 
     return MultiSliver(
