@@ -3,15 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
-import 'package:smooth_app/generic_lib/design_constants.dart';
-import 'package:smooth_app/helpers/launch_url_helper.dart';
+import 'package:smooth_app/generic_lib/bottom_sheets/smooth_bottom_sheet.dart';
 import 'package:smooth_app/l10n/app_localizations.dart';
 import 'package:smooth_app/pages/prices/price_model.dart';
-import 'package:smooth_app/pages/prices/product_price_add_page.dart';
-import 'package:smooth_app/pages/product/common/product_refresher.dart';
 import 'package:smooth_app/query/product_query.dart';
-import 'package:smooth_app/widgets/smooth_app_bar.dart';
-import 'package:smooth_app/widgets/smooth_scaffold.dart';
+import 'package:smooth_app/widgets/v2/smooth_leading_button.dart';
+import 'package:smooth_app/widgets/v2/smooth_scaffold2.dart';
+import 'package:smooth_app/widgets/v2/smooth_topbar2.dart';
 
 /// Full page display of a proof.
 class PriceProofPage extends StatefulWidget {
@@ -38,8 +36,17 @@ class _PriceProofPageState extends State<PriceProofPage> {
     final DateFormat dateFormat = DateFormat.yMd(
       ProductQuery.getLocaleString(),
     ).add_Hms();
-    return SmoothScaffold(
-      floatingActionButton: _existingPrices == null
+
+    print(widget.proof.toJson());
+
+    return SmoothScaffold2(
+      topBar: SmoothTopBar2(
+        title: appLocalizations.user_search_proof_title,
+        leadingAction: SmoothLeadingAction.back,
+        size: SmoothTopBar2Size.small,
+        elevationOnScroll: false,
+      ),
+      /*floatingBottomBar: _existingPrices == null
           ? null
           : FloatingActionButton.extended(
               label: Text(appLocalizations.prices_add_a_price),
@@ -65,47 +72,67 @@ class _PriceProofPageState extends State<PriceProofPage> {
                   ),
                 );
               },
-            ),
-      appBar: SmoothAppBar(
-        title: Text(appLocalizations.user_search_proof_title),
-        subTitle: Text(dateFormat.format(widget.proof.created)),
-        actions: <Widget>[
-          IconButton(
-            tooltip: appLocalizations.prices_app_button,
-            icon: const Icon(Icons.open_in_new),
-            onPressed: () async => LaunchUrlHelper.launchURL(_getUrl(true)),
-          ),
-        ],
-      ),
-      body: Center(
-        child: Badge.count(
-          count: widget.proof.priceCount,
-          alignment: Alignment.topRight,
-          offset: const Offset(-MEDIUM_SPACE, MEDIUM_SPACE),
-          padding: const EdgeInsetsDirectional.all(VERY_SMALL_SPACE),
-          child: Image.network(
-            _getUrl(false),
-            fit: BoxFit.cover,
-            loadingBuilder:
-                (
-                  BuildContext context,
-                  Widget child,
-                  ImageChunkEvent? loadingProgress,
-                ) {
-                  if (loadingProgress == null) {
-                    return child;
-                  }
-                  return Center(
-                    child: SizedBox(
-                      width: double.maxFinite,
-                      height: double.maxFinite,
-                      child: Image.network(_getUrl(true), fit: BoxFit.contain),
-                    ),
-                  );
-                },
+            ),*/
+      floatingBottomBar: SmoothModalSheet(
+        title: 'Titre',
+        closeButton: false,
+        bodyPadding: EdgeInsets.zero,
+        body: Material(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: Column(
+            children: <Widget>[
+              _PriceProofEntry(
+                label: 'Date',
+                value: dateFormat.format(widget.proof.created),
+              ),
+              _PriceProofEntry(
+                label: 'Nombre de prix',
+                value: widget.proof.priceCount.toString(),
+              ),
+              _PriceProofEntry(
+                label: 'Date',
+                value: dateFormat.format(widget.proof.created),
+              ),
+            ],
           ),
         ),
       ),
+
+      children: <Widget>[
+        SliverFillViewport(
+          delegate: SliverChildBuilderDelegate((
+            BuildContext context,
+            int index,
+          ) {
+            return InteractiveViewer(
+              child: Image.network(
+                _getUrl(false),
+                fit: BoxFit.cover,
+                loadingBuilder:
+                    (
+                      BuildContext context,
+                      Widget child,
+                      ImageChunkEvent? loadingProgress,
+                    ) {
+                      if (loadingProgress == null) {
+                        return child;
+                      }
+                      return Center(
+                        child: SizedBox(
+                          width: double.maxFinite,
+                          height: double.maxFinite,
+                          child: Image.network(
+                            _getUrl(true),
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      );
+                    },
+              ),
+            );
+          }, childCount: 1),
+        ),
+      ],
     );
   }
 
@@ -129,8 +156,33 @@ class _PriceProofPageState extends State<PriceProofPage> {
       return;
     }
     _existingPrices = prices.value.items ?? <Price>[];
+
     if (mounted) {
       setState(() {});
     }
+  }
+}
+
+class _PriceProofEntry extends StatelessWidget {
+  const _PriceProofEntry({required this.label, required this.value});
+
+  final String label;
+  final Widget value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Text(label),
+        const Spacer(),
+        Text(
+          value,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
   }
 }

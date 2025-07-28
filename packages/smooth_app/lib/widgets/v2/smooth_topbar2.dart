@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
 import 'package:smooth_app/generic_lib/design_constants.dart';
 import 'package:smooth_app/helpers/num_utils.dart';
+import 'package:smooth_app/helpers/ui_helpers.dart';
 import 'package:smooth_app/pages/product/product_type_extensions.dart';
 import 'package:smooth_app/themes/smooth_theme.dart';
 import 'package:smooth_app/themes/smooth_theme_colors.dart';
@@ -12,6 +13,7 @@ import 'package:smooth_app/widgets/v2/smooth_leading_button.dart';
 class SmoothTopBar2 extends StatefulWidget implements PreferredSizeWidget {
   const SmoothTopBar2({
     required this.title,
+    this.size = SmoothTopBar2Size.normal,
     this.subTitle,
     this.topWidget,
     this.leadingAction,
@@ -28,8 +30,10 @@ class SmoothTopBar2 extends StatefulWidget implements PreferredSizeWidget {
        assert(forceMultiLines == false || subTitle == null);
 
   /// Height without the top view padding
-  static double kTopBar2Height = 100;
+  static double kTopBar2NormalHeight = 100.0;
+  static double kTopBar2SmallHeight = kToolbarHeight;
 
+  final SmoothTopBar2Size size;
   final String title;
   final String? subTitle;
   final double elevation;
@@ -48,10 +52,13 @@ class SmoothTopBar2 extends StatefulWidget implements PreferredSizeWidget {
   State<SmoothTopBar2> createState() => _SmoothTopBar2State();
 
   @override
-  Size get preferredSize => Size(
-    double.infinity,
-    kTopBar2Height + (topWidget?.preferredSize.height ?? 0.0),
-  );
+  Size get preferredSize =>
+      Size(double.infinity, height + (topWidget?.preferredSize.height ?? 0.0));
+
+  double get height => switch (size) {
+    SmoothTopBar2Size.normal => kTopBar2NormalHeight,
+    SmoothTopBar2Size.small => kTopBar2SmallHeight,
+  };
 }
 
 class _SmoothTopBar2State extends State<SmoothTopBar2> {
@@ -63,8 +70,8 @@ class _SmoothTopBar2State extends State<SmoothTopBar2> {
     super.initState();
 
     if (widget.elevationOnScroll || widget.reducedHeightOnScroll) {
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) => PrimaryScrollController.maybeOf(
+      onNextFrame(
+        () => PrimaryScrollController.maybeOf(
           context,
         )?.addListener(() => _onScroll()),
       );
@@ -104,11 +111,7 @@ class _SmoothTopBar2State extends State<SmoothTopBar2> {
 
     final double imageWidth = MediaQuery.sizeOf(context).width * 0.22;
     final double imageHeight = imageWidth * 114 / 92;
-    final BorderRadius borderRadius = BorderRadius.vertical(
-      bottom: Radius.circular(
-        HEADER_BORDER_RADIUS.topRight.x * (1 - _progress),
-      ),
-    );
+    final BorderRadius borderRadius = _getBorderRadius();
 
     final Color backgroundColor =
         widget.backgroundColor ??
@@ -142,22 +145,15 @@ class _SmoothTopBar2State extends State<SmoothTopBar2> {
                   height: _computeHeight(),
                   child: Stack(
                     children: <Widget>[
-                      _getImageAsset(
-                        backgroundColor: backgroundColor,
-                        textDirection: textDirection,
+                      if (widget.size == SmoothTopBar2Size.normal)
+                        _getImageAsset(
+                          backgroundColor: backgroundColor,
+                          textDirection: textDirection,
+                          imageWidth: imageWidth,
+                          imageHeight: imageHeight,
+                        ),
+                      _wrapChild(
                         imageWidth: imageWidth,
-                        imageHeight: imageHeight,
-                      ),
-                      Positioned.directional(
-                        textDirection: textDirection,
-                        top: 0.0,
-                        bottom: VERY_LARGE_SPACE * (1 - _progress),
-                        start: widget.leadingAction != null
-                            ? BALANCED_SPACE
-                            : VERY_LARGE_SPACE,
-                        end:
-                            (imageWidth * 0.75) *
-                            (1 - _progress.progressAndClamp(0.5, 0.9, 1.0)),
                         child: Align(
                           alignment: AlignmentDirectional.topStart,
                           child: Row(
@@ -167,9 +163,7 @@ class _SmoothTopBar2State extends State<SmoothTopBar2> {
                             children: <Widget>[
                               if (widget.leadingAction != null) ...<Widget>[
                                 Padding(
-                                  padding: const EdgeInsetsDirectional.only(
-                                    top: 9.0,
-                                  ),
+                                  padding: _getLeadingPadding(),
                                   child: SmoothLeadingButton(
                                     action: widget.leadingAction!,
                                     foregroundColor: widget.foregroundColor,
@@ -179,10 +173,7 @@ class _SmoothTopBar2State extends State<SmoothTopBar2> {
                               ],
                               Expanded(
                                 child: Padding(
-                                  padding: EdgeInsetsDirectional.only(
-                                    bottom: 1.56 * (1 - _progress),
-                                    top: _computeTextTopPadding(),
-                                  ),
+                                  padding: _getTextPadding(),
                                   child: _getText(darkTheme, colors),
                                 ),
                               ),
@@ -201,9 +192,53 @@ class _SmoothTopBar2State extends State<SmoothTopBar2> {
     );
   }
 
+  Widget _wrapChild({required Widget child, required double imageWidth}) {
+    return PositionedDirectional(
+      top: 0.0,
+      bottom: switch (widget.size) {
+        SmoothTopBar2Size.normal => VERY_LARGE_SPACE * (1 - _progress),
+        SmoothTopBar2Size.small => 0.0,
+      },
+      start: widget.leadingAction != null ? BALANCED_SPACE : VERY_LARGE_SPACE,
+      end:
+          (imageWidth * 0.75) * (1 - _progress.progressAndClamp(0.5, 0.9, 1.0)),
+      child: child,
+    );
+  }
+
+  BorderRadius _getBorderRadius() {
+    if (widget.size == SmoothTopBar2Size.small) {
+      return BorderRadius.zero;
+    }
+
+    return BorderRadius.vertical(
+      bottom: Radius.circular(
+        HEADER_BORDER_RADIUS.topRight.x * (1 - _progress),
+      ),
+    );
+  }
+
+  EdgeInsetsGeometry _getLeadingPadding() {
+    if (widget.size == SmoothTopBar2Size.small) {
+      return EdgeInsetsDirectional.zero;
+    }
+
+    return const EdgeInsetsDirectional.only(top: 9.0);
+  }
+
+  EdgeInsetsGeometry _getTextPadding() {
+    if (widget.size == SmoothTopBar2Size.small) {
+      return EdgeInsetsDirectional.zero;
+    }
+
+    return EdgeInsetsDirectional.only(
+      bottom: 1.56 * (1 - _progress),
+      top: _computeTextTopPadding(),
+    );
+  }
+
   double _computeHeight() =>
-      kToolbarHeight +
-      ((SmoothTopBar2.kTopBar2Height - kToolbarHeight) * (1 - _progress));
+      kToolbarHeight + ((widget.height - kToolbarHeight) * (1 - _progress));
 
   Positioned _getImageAsset({
     required Color backgroundColor,
@@ -319,3 +354,5 @@ class _SmoothTopBar2State extends State<SmoothTopBar2> {
     return topPadding;
   }
 }
+
+enum SmoothTopBar2Size { normal, small }

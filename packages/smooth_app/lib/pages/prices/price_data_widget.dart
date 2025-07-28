@@ -90,8 +90,7 @@ class PriceDataWidget extends StatelessWidget {
                   Expanded(
                     child: _PriceDataEntry(
                       icon: const icons.Location(size: 19.44),
-                      label:
-                          '${price.location?.city}, ${price.location?.country ?? ''}',
+                      label: _formatLocation(),
                       labelPadding: const EdgeInsetsDirectional.only(
                         bottom: 2.5,
                       ),
@@ -105,6 +104,19 @@ class PriceDataWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatLocation() {
+    final StringBuffer buffer = StringBuffer();
+
+    if (price.location?.city != null) {
+      buffer.write('${price.location!.city}, ');
+    }
+    if (price.location?.country != null) {
+      buffer.write(price.location?.country);
+    }
+
+    return buffer.toString();
   }
 }
 
