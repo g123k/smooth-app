@@ -244,6 +244,13 @@ Widget build(BuildContext context) {
             carouselManager.showSearchCard();
           }
 
+          if (_pageKeys[index] != _currentPage) {
+            AnalyticsHelper.trackEvent(
+              AnalyticsEvent.bottomTabSelected,
+              action: _pageKeys[index].name,
+            );
+          }
+
           _selectTab(_pageKeys[index], index);
         },
       ),
@@ -274,9 +281,10 @@ Widget build(BuildContext context) {
         child: IndexedStack(index: _currentPage!.index, children: _tabs),
       ),
       bottomNavigationBar: ConsumerFilter&lt;UserPreferences&gt;(
-        buildWhen:
-            (UserPreferences? previousValue, UserPreferences currentValue) =&gt;
-                _isProd(currentValue) != (_isProd(previousValue)),
+        buildWhen: (
+          UserPreferences? previousValue,
+          UserPreferences currentValue,
+        ) =&gt; _isProd(currentValue) != (_isProd(previousValue)),
         builder:
             (BuildContext context, UserPreferences prefs, Widget? child) {
               if (_isProd(prefs)) {

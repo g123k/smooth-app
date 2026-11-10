@@ -69,10 +69,14 @@
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">Widget getWidget({
-  required final BuildContext context,
-  required final KnowledgePanelTableCellWidthComputer computer,
+  required BuildContext context,
+  required KnowledgePanelTableCellWidthComputer computer,
 }) {
   final bool isDark = Theme.brightnessOf(context) == Brightness.dark;
+  final Color? color = getTextColorFromKnowledgePanelElementEvaluation(
+    evaluation,
+    context.extension&lt;SmoothColorsThemeExtension&gt;(),
+  );
   final Color foreground, background;
   if (isDark) {
     foreground = Colors.white.withAlpha(192);
@@ -117,7 +121,7 @@
           ),
         );
 
-  Widget getTextWidget(final int maxLines) {
+  Widget getTextWidget(int maxLines) {
     final AlignmentDirectional textAlignment = leftAlign
         ? AlignmentDirectional.centerStart
         : AlignmentDirectional.centerEnd;
@@ -132,10 +136,10 @@
     if (color != null) {
       styleBuilder.write(
         &#39;color: rgba(&#39;
-        &#39;${(color!.r * 255.0).round().clamp(0, 255)},&#39;
-        &#39;${(color!.g * 255.0).round().clamp(0, 255)},&#39;
-        &#39;${(color!.b * 255.0).round().clamp(0, 255)},&#39;
-        &#39;${color!.a}&#39;
+        &#39;${(color.r * 255.0).round().clamp(0, 255)},&#39;
+        &#39;${(color.g * 255.0).round().clamp(0, 255)},&#39;
+        &#39;${(color.b * 255.0).round().clamp(0, 255)},&#39;
+        &#39;${color.a}&#39;
         &#39;);&#39;,
       );
     }

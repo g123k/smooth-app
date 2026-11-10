@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the DARK_ORANGE_COLOR constant from the design_constants library, for the Dart programming language.">
-  <title>DARK_ORANGE_COLOR constant - design_constants library - Dart API</title>
+  <meta name="description" content="API docs for the main function from the main_dev library, for the Dart programming language.">
+  <title>main function - main_dev library - Dart API</title>
 
 
   
@@ -25,10 +25,10 @@
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../index.html">smooth_app</a></li>
-    <li><a href="../generic_lib_design_constants/">generic_lib&#47;design_constants.dart</a></li>
-    <li class="self-crumb">DARK_ORANGE_COLOR constant</li>
+    <li><a href="../entrypoints_dev_main_dev/">entrypoints&#47;dev&#47;main_dev.dart</a></li>
+    <li class="self-crumb">main function</li>
   </ol>
-  <div class="self-name">DARK_ORANGE_COLOR</div>
+  <div class="self-name">main</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -45,28 +45,50 @@
   <div
       id="dartdoc-main-content"
       class="main-content"
-      data-above-sidebar="generic_lib_design_constants&#47;generic_lib_design_constants-library-sidebar.html"
+      data-above-sidebar="entrypoints_dev_main_dev&#47;entrypoints_dev_main_dev-library-sidebar.html"
       data-below-sidebar="">
       <div>
-<h1><span class="kind-top-level-property">DARK_ORANGE_COLOR</span> top-level constant 
+<h1><span class="kind-function">main</span> function 
  
 </h1></div>
 
-        <section class="multi-line-signature">
-          
-          <a href="https://api.flutter.dev/flutter/dart-ui/Color-class.html">Color</a>
-          const <span class="name ">DARK_ORANGE_COLOR</span>
-          
-
-        </section>
+    <section class="multi-line-signature">
         
+<span class="returntype">void</span>
+<span class="name ">main</span>(<wbr>)
 
         
-<section class="summary source-code" id="source">
-  <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">const Color DARK_ORANGE_COLOR = Color(0xFFE07312);</code></pre>
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Fast development entrypoint with:</p>
+<ul>
+<li>Mocked barcode scanner (no camera hardware / ML Kit / ZXing native overhead)</li>
+<li>URI app store (no Google Play / App Store SDK overhead)</li>
+<li>Fast startup and compatible with Desktop (macOS, Linux, Windows), Android, and iOS</li>
+</ul>
+<p>Run on desktop (instant startup, no emulator required):
+fvm flutter run -t lib/entrypoints/dev/main_dev.dart -d macos
+fvm flutter run -t lib/entrypoints/dev/main_dev.dart -d linux
+fvm flutter run -t lib/entrypoints/dev/main_dev.dart -d windows</p>
+<p>Or run on a mobile device / emulator:
+fvm flutter run -t lib/entrypoints/dev/main_dev.dart</p>
 </section>
 
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">void main() {
+  launchSmoothApp(
+    barcodeScanner: const MockedScanner(),
+    appStore: URIAppStore(Uri.parse(&#39;https:&#47;&#47;openfoodfacts.org&#39;)),
+    scannerLabel: ScannerLabel.Test,
+    storeLabel: StoreLabel.Test,
+  );
+}</code></pre>
+</section>
 
 
   </div> <!-- /.main-content -->
@@ -79,11 +101,11 @@
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../index.html">smooth_app</a></li>
-    <li><a href="../generic_lib_design_constants/">design_constants</a></li>
-    <li class="self-crumb">DARK_ORANGE_COLOR constant</li>
+    <li><a href="../entrypoints_dev_main_dev/">main_dev</a></li>
+    <li class="self-crumb">main function</li>
 </ol>
 
-    <h5>design_constants library</h5>
+    <h5>main_dev library</h5>
     <div id="dartdoc-sidebar-left-content"></div>
   </div><!--/.sidebar-offcanvas-left-->
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
